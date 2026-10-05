@@ -118,6 +118,9 @@ summary::-webkit-details-marker{display:none}
 summary::after{content:"+";color:var(--muted);font-weight:700}
 details[open] summary::after{content:"−"}
 details .body{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px}
+.howto{background:var(--bg)}
+.howto summary{font-size:13px;padding:9px 12px}
+.howto .body{padding:0 12px 12px;font-size:14px}
 details ol{margin:0;padding-left:20px}
 .group-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:10px}
 
@@ -157,6 +160,7 @@ textarea{resize:vertical}
 .tiles b{font:800 28px var(--display);font-variant-numeric:tabular-nums;line-height:1.1}
 .tiles small{font:600 13px var(--body);color:var(--muted)}
 .tiles em{font-style:normal;font-size:12px;color:var(--done);font-weight:600}
+.tiles em.up{color:var(--muted)}
 .chart{width:100%;max-width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px}
 .chart .g{stroke:var(--line);stroke-width:1}
 .chart .ax{fill:var(--muted);font:500 10px var(--body)}
@@ -173,6 +177,24 @@ textarea{resize:vertical}
 .hist-ex li{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0;border-bottom:1px solid var(--line)}
 .hist-ex li:last-child{border:none}
 .hist-ex li span:last-child{text-align:right}
+/* progress photos */
+#photo-add{display:inline-flex;align-items:center;gap:6px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.compare figure{margin:0;display:flex;flex-direction:column;gap:4px;min-width:0}
+.compare img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;background:var(--line);cursor:pointer}
+.compare figcaption{font-size:12px;color:var(--muted)}
+.compare figcaption b{color:var(--ink)}
+.pday{display:flex;flex-direction:column;gap:6px}
+.pday-date{font-size:13px;font-weight:600}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+#gallery-toggle{align-self:flex-start}
+.thumbs button{padding:0;border:none;background:var(--line);border-radius:6px;overflow:hidden;cursor:pointer;aspect-ratio:3/4}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.viewer{position:fixed;inset:0;z-index:30;background:#000;color:#fff;display:flex;flex-direction:column;padding:calc(10px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.viewer img{flex:1;min-height:0;width:100%;object-fit:contain}
+.viewer-top,.viewer-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-block:8px}
+.viewer button{font:600 14px var(--body);color:#fff;background:rgba(255,255,255,.14);border:none;border-radius:8px;padding:9px 14px;cursor:pointer}
+.viewer #viewer-del{background:#c92a2a}
 .tip{position:fixed;z-index:20;background:var(--ink);color:var(--bg);font:600 12px var(--body);padding:5px 8px;border-radius:6px;pointer-events:none;white-space:nowrap}
 </style>
 </head>
@@ -267,6 +289,16 @@ textarea{resize:vertical}
       <button type="submit" class="primary" id="body-save">Lưu số đo</button>
       <p class="cue" id="body-msg" aria-live="polite"></p>
     </form>
+    <div class="ex" id="photos-box">
+      <h3>Ảnh tiến độ</h3>
+      <p class="cue">Không bắt buộc, hôm nào muốn thì chụp. Nên chụp cùng góc, cùng chỗ đứng, cùng ánh sáng để dễ so sánh. Ảnh chỉ lưu trên điện thoại này, không gửi đi đâu.</p>
+      <label class="primary" for="photo-input" id="photo-add">📷 Thêm ảnh hôm nay</label>
+      <input type="file" id="photo-input" accept="image/*" multiple hidden>
+      <p class="cue" id="photo-msg" aria-live="polite"></p>
+      <div id="compare"></div>
+      <button class="chip" id="gallery-toggle" type="button" aria-expanded="false" aria-controls="gallery" hidden></button>
+      <div id="gallery" class="section"></div>
+    </div>
     <div id="logbody" class="section"></div>
     <div class="ex" id="backup">
       <h3>Sao lưu dữ liệu</h3>
@@ -356,6 +388,15 @@ textarea{resize:vertical}
 </div>
 
 <div id="tip" class="tip" hidden></div>
+<div id="viewer" class="viewer" hidden role="dialog" aria-label="Xem ảnh">
+  <div class="viewer-top"><b id="viewer-date"></b><button type="button" id="viewer-close" aria-label="Đóng">✕</button></div>
+  <img id="viewer-img" alt="Ảnh tiến độ">
+  <div class="viewer-bar">
+    <button type="button" id="viewer-prev">‹ Trước</button>
+    <button type="button" id="viewer-del">Xoá ảnh</button>
+    <button type="button" id="viewer-next">Sau ›</button>
+  </div>
+</div>
 <div class="timer" id="timer">
   <div class="in">
     <div class="clock" id="clock">0:00</div>
@@ -368,6 +409,44 @@ textarea{resize:vertical}
 </div>
 
 <script>
+/* extra coaching per exercise: [main muscles, common mistake, breathing ("" = no breathing line, undefined = default)] */
+const MORE = {
+  pulldown:["Lưng xô, bắp tay sau vai, bắp tay trước","Ngả người ra sau quá nhiều và giật thanh xuống bằng đà."],
+  pullup:["Lưng xô, cơ tròn lớn, bắp tay trước","Đung đưa chân lấy đà, hoặc chỉ kéo nửa chừng không qua cằm."],
+  dbrow:["Lưng xô, lưng giữa, vai sau","Vặn người để kéo tạ, hoặc kéo tạ lên ngực thay vì về hông."],
+  cablerow:["Lưng giữa, lưng xô, vai sau","Ngả người ra sau để kéo, lưng còng khi duỗi tay ra."],
+  lateral:["Vai giữa, phần làm vai rộng ra","Dùng tạ quá nặng rồi vung người, nhún vai lên tai."],
+  press:["Vai trước, vai giữa, bắp tay sau","Ưỡn lưng dưới quá nhiều, hạ tạ không đủ sâu."],
+  facepull:["Vai sau, cơ cầu vai giữa, cơ xoay vai","Kéo dây về ngực thay vì về trán, khuỷu tay thấp."],
+  incline:["Ngực trên, vai trước, bắp tay sau","Bè khuỷu tay vuông góc với thân, nảy tạ trên ngực."],
+  pushup:["Ngực, vai trước, bắp tay sau, bụng","Võng hông hoặc chổng mông, chỉ hạ người nửa chừng."],
+  curl:["Bắp tay trước","Đung đưa người, đưa khuỷu tay ra trước để lấy đà."],
+  pushdown:["Bắp tay sau","Khuỷu tay rời khỏi hông, dùng vai đè thanh xuống."],
+  squat:["Đùi trước, mông, đùi sau","Đầu gối đổ vào trong, gót chân nhấc lên, lưng còng."],
+  rdl:["Đùi sau, mông, lưng dưới","Còng lưng khi hạ tạ, gập gối như squat."],
+  lunge:["Đùi trước, mông","Bước quá ngắn làm gối trước vượt xa mũi chân, thân đổ về trước."],
+  plank:["Bụng, cơ lõi, vai","Võng lưng dưới hoặc chổng mông cao.","thở đều, không nín thở."],
+  legraise:["Bụng dưới, cơ gập hông","Đung đưa người lấy đà, hạ chân quá nhanh."],
+  cardio:["Tim phổi, đốt mỡ toàn thân","Đi quá nhanh đến mức không nói chuyện được, khó duy trì lâu.",""],
+  invrow:["Lưng giữa, lưng xô, vai sau, bắp tay trước","Võng hông, chỉ kéo nửa chừng không chạm ngực."],
+  bandpd:["Lưng xô","Gập người về trước để kéo, dây quá nhẹ nên không thấy mỏi."],
+  pike:["Vai trước, vai giữa, bắp tay sau","Hông thấp quá nên thành hít đất thường, đầu đâm thẳng xuống sàn."],
+  bpa:["Vai sau, lưng giữa","Gập khuỷu tay, nhún vai lên khi kéo."],
+  bandfp:["Vai sau, cơ xoay vai","Kéo về cổ hoặc ngực, khuỷu tay thấp."],
+  bagrow:["Lưng xô, lưng giữa","Vặn thân người, kéo tạ lên vai."],
+  bulgarian:["Đùi trước, mông","Chân trước đặt quá gần ghế, gối đổ vào trong."],
+  slrdl:["Đùi sau, mông, giữ thăng bằng","Còng lưng, xoay hông mở sang một bên."],
+  bridge:["Mông, đùi sau","Đẩy bằng lưng dưới thay vì siết mông, ưỡn lưng quá mức."],
+  lyingleg:["Bụng dưới","Lưng dưới bị nhấc khỏi sàn khi hạ chân."],
+  diamond:["Bắp tay sau, ngực trong","Bè khuỷu tay sang ngang, võng hông."],
+  bandcurl:["Bắp tay trước","Đung đưa người, thả dây về quá nhanh."],
+  jumpsq:["Đùi, mông, tim phổi","Tiếp đất mạnh bằng gót, gối khoá thẳng khi chạm đất.","hít vào khi hạ người, thở ra khi bật lên."],
+  climber:["Bụng, vai, tim phổi","Chổng mông cao, vai lùi ra sau cổ tay.","thở nhanh, đều theo nhịp chân."],
+  walkh:["Tim phổi, đốt mỡ toàn thân","Bắt đầu quá nhanh rồi mệt, bỏ dở giữa chừng.",""],
+  dips:["Ngực dưới, bắp tay sau, vai trước","Hạ quá sâu gây đau vai, nhún vai lên tai."],
+  pullover:["Lưng xô, ngực, cơ răng cưa","Gập duỗi khuỷu tay làm bài thành tập tay sau, hạ tạ quá sâu gây đau vai."],
+  rearfly:["Vai sau, lưng giữa","Đứng thẳng người quá nên tạ tập sang vai giữa, vung tạ."]
+};
 const EX = {
   pulldown:{n:"Kéo cáp xuống",en:"Lat Pulldown",g:"Lưng",yt:"lat pulldown form",
     how:["Ngồi vào máy, kẹp đùi dưới đệm.","Nắm thanh rộng hơn vai, lòng bàn tay hướng ra trước.","Kéo thanh xuống ngực trên, rồi thả lên chậm."],
@@ -426,6 +505,9 @@ const EX = {
   dips:{n:"Chống xà kép",en:"Parallel Bar Dips",g:"Ở nhà",yt:"parallel bar dips form beginner",
     how:["Chống hai tay lên xà kép, tay thẳng, chân co lên khỏi đất.","Gập khuỷu, hạ người đến khi vai ngang khuỷu tay.","Đẩy người lên đến khi tay thẳng."],
     tip:"Tập ngực dưới, vai trước và tay sau. Người hơi ngả về trước. Không hạ quá sâu nếu thấy đau vai."},
+  pullover:{n:"Kéo tạ qua đầu",en:"Dumbbell Pullover",g:"Ở nhà",yt:"dumbbell pullover lats form",
+    how:["Nằm ngửa trên sàn hoặc ghế, hai tay ôm một tạ 7kg phía trên ngực.","Giữ khuỷu tay hơi cong, hạ tạ ra sau đầu đến khi thấy căng nách và lưng xô.","Kéo tạ về trên ngực bằng lưng, không gập duỗi khuỷu tay."],
+    tip:"Bài thay cho kéo xà khi ở nhà, tập lưng xô cho lưng rộng."},
   rearfly:{n:"Dang tay cúi người",en:"Dumbbell Reverse Fly",g:"Ở nhà",yt:"dumbbell reverse fly form",
     how:["Đứng gập hông, thân ngả gần song song sàn, lưng thẳng, mỗi tay một tạ 5kg.","Dang hai tay sang ngang, khuỷu hơi cong, ép hai bả vai.","Hạ xuống chậm."],
     tip:"Tập vai sau, thay cho Face Pull. Làm chậm, không vung tạ."},
@@ -474,22 +556,28 @@ const EX = {
 };
 
 const W = {
-  A:{t:"Thân trên A (gym)",s:"Lưng và vai",list:[["pulldown",4,"8–12","Hoặc kéo xà nếu làm được"],["dbrow",4,"10"],["press",3,"10"],["lateral",4,"15"],["curl",3,"12"]]},
-  L:{t:"Thân dưới + bụng (gym)",s:"Chân, mông, bụng",list:[["lateral",3,"15","Thêm cho vai rộng"],["squat",4,"8–10"],["rdl",3,"10"],["lunge",3,"12","Mỗi chân"],["plank",3,"45s"],["legraise",3,"12"]]},
+  A:{t:"Thân trên A (gym)",s:"Lưng và vai",list:[["pulldown",4,"8–12","Kéo xà được 8 lần thì thay bằng kéo xà"],["dbrow",4,"10"],["press",3,"10"],["lateral",4,"15"],["facepull",3,"15"],["curl",3,"12"]]},
+  L:{t:"Thân dưới + bụng (gym)",s:"Chân, mông, bụng",list:[["squat",4,"8–10"],["rdl",3,"10"],["lunge",3,"12","Mỗi chân"],["lateral",3,"15","Thêm cho vai rộng"],["plank",3,"45s"],["legraise",3,"12"]]},
   B:{t:"Thân trên B (gym)",s:"Ngực, vai, lưng",list:[["incline",4,"10"],["cablerow",3,"12"],["lateral",4,"15"],["facepull",3,"15"],["pushdown",3,"12"]]},
-  F:{t:"Toàn thân + cardio (gym)",s:"Nhẹ, đốt mỡ",list:[["pullup",3,"tối đa","Kéo đến khi không lên được nữa"],["pushup",3,"tối đa"],["lateral",3,"15"],["cardio",1,"20–30′"]]}
+  F:{t:"Toàn thân + cardio (gym)",s:"Nhẹ, đốt mỡ",list:[["pullup",3,"5–10","Dừng khi còn sức làm thêm 1–2 lần. Chưa kéo được thì dùng máy kéo xà có đỡ (assisted)"],["cablerow",3,"12"],["pushup",3,"10–25","Dừng khi còn sức làm thêm 1–2 lần"],["lateral",3,"15"],["cardio",1,"20–30′"]]}
 };
 const H = {
-  A:{t:"Lưng và vai (ở nhà)",s:"Tạ 5kg, 7kg và cái bàn",list:[["invrow",4,"10–12","Hôm nào ra công viên thì thay bằng kéo xà đơn"],["dbrow",4,"15–20","Tạ 7kg, mỗi tay, hạ chậm 3 giây"],["press",3,"12–15","Tạ 7kg, ngồi ghế hoặc đứng"],["lateral",4,"15–20","Tạ 5kg"],["rearfly",3,"15–20","Tạ 5kg"]]},
-  L:{t:"Chân + bụng (ở nhà)",s:"Tạ 5kg, 7kg và ghế",list:[["lateral",3,"15–20","Tạ 5kg, thêm cho vai rộng"],["bulgarian",3,"12","Mỗi chân, cầm cả 2 tạ"],["squat",4,"20","Ôm tạ 7kg trước ngực, hạ chậm 3 giây"],["slrdl",3,"12","Mỗi chân, tạ 7kg"],["bridge",3,"12","Một chân, mỗi bên"],["plank",3,"45s"],["lyingleg",3,"12–15"]]},
-  B:{t:"Ngực, vai, tay (ở nhà)",s:"Sàn và tạ 5kg, 7kg",list:[["pushup",4,"tối đa"],["dbrow",4,"15–20","Tạ 7kg, mỗi tay"],["lateral",4,"15–20","Tạ 5kg"],["rearfly",3,"15–20","Tạ 5kg"],["diamond",3,"tối đa"],["curl",3,"12–15","Tạ 7kg, hạ chậm 3 giây"]]},
-  F:{t:"Toàn thân + đốt mỡ (ở nhà)",s:"Làm vòng tròn, nghỉ 1 phút mỗi vòng",list:[["invrow",3,"tối đa"],["pushup",3,"tối đa"],["lateral",3,"15–20","Tạ 5kg"],["jumpsq",3,"15"],["climber",3,"30s"],["walkh",1,"20–30′"]]}
+  A:{t:"Lưng và vai (ở nhà)",s:"Tạ 5kg, 7kg và cái bàn",list:[["invrow",4,"10–15","Hôm nào ra công viên thì thay bằng kéo xà"],["pullover",3,"12–15","Tạ 7kg"],["dbrow",4,"15–20","Tạ 7kg, mỗi tay, hạ chậm 3 giây"],["press",3,"12–15","Tạ 7kg, ngồi ghế hoặc đứng"],["lateral",4,"15–20","Tạ 5kg"],["rearfly",3,"15–20","Tạ 5kg"]]},
+  L:{t:"Chân + bụng (ở nhà)",s:"Tạ 5kg, 7kg và ghế",list:[["bulgarian",3,"12","Mỗi chân, cầm cả 2 tạ"],["squat",4,"20","Ôm tạ 7kg trước ngực, hạ chậm 3 giây"],["slrdl",3,"12","Mỗi chân, tạ 7kg"],["bridge",3,"12","Một chân, mỗi bên"],["lateral",3,"15–20","Tạ 5kg, thêm cho vai rộng"],["plank",3,"45s"],["lyingleg",3,"12–15"]]},
+  B:{t:"Ngực, vai, tay (ở nhà)",s:"Sàn và tạ 5kg, 7kg",list:[["pushup",4,"10–25","Dừng khi còn sức làm thêm 1–2 lần"],["dbrow",4,"15–20","Tạ 7kg, mỗi tay"],["lateral",4,"15–20","Tạ 5kg"],["rearfly",3,"15–20","Tạ 5kg"],["diamond",3,"8–15","Dừng khi còn sức làm thêm 1–2 lần"],["curl",3,"12–15","Tạ 7kg, hạ chậm 3 giây"]]},
+  F:{t:"Toàn thân + đốt mỡ (ở nhà)",s:"Làm vòng tròn, nghỉ 1 phút mỗi vòng",list:[["invrow",3,"10–15"],["pushup",3,"10–25","Dừng khi còn sức làm thêm 1–2 lần"],["lateral",3,"15–20","Tạ 5kg"],["jumpsq",3,"15"],["climber",3,"30s"],["walkh",1,"20–30′"]]}
 };
 const P = {
-  A:{t:"Lưng và vai (công viên)",s:"Xà đơn, xà thấp",list:[["pullup",5,"tối đa","Chưa lên được thì nhảy lên, hạ chậm 5 giây"],["invrow",3,"10–15","Dùng xà thấp ngang hông"],["pike",3,"8–10","Chống tay trên ghế đá cho khó hơn"],["lateral",4,"15–20","Mang tạ 5kg ra công viên"],["legraise",3,"10–12","Treo trên xà đơn"]]},
-  L:{t:"Chân + bụng (công viên)",s:"Ghế đá, bãi cỏ",list:[["bulgarian",3,"12","Mỗi chân, gác chân lên ghế đá"],["jumpsq",4,"15"],["lunge",3,"12","Mỗi chân, đi bộ chùng chân"],["plank",3,"45s"],["legraise",3,"10–12","Treo trên xà đơn"],["walkh",1,"10′","Chạy chậm quanh công viên"]]},
-  B:{t:"Ngực, vai, tay (công viên)",s:"Xà kép, xà đơn",list:[["dips",4,"tối đa","Chưa lên được thì chống xà kép giữ 20 giây"],["pushup",3,"tối đa"],["pullup",3,"tối đa","Nắm ngửa tay để tập thêm bắp tay trước"],["lateral",4,"15–20","Mang tạ 5kg ra công viên"],["diamond",3,"tối đa"],["climber",3,"30s"]]},
-  F:{t:"Toàn thân (công viên)",s:"Xà đơn, xà kép, rồi chạy bộ",list:[["pullup",4,"tối đa"],["dips",4,"tối đa"],["legraise",3,"10–12","Treo trên xà đơn"],["pushup",3,"tối đa"],["lateral",3,"15–20","Mang tạ 5kg ra công viên"],["walkh",1,"20′","Chạy chậm hoặc đi bộ nhanh quanh công viên"]]}
+  A:{t:"Lưng và vai (công viên)",s:"Xà đơn, xà thấp, tạ 5kg",list:[["pullup",4,"5–10","Dừng khi còn sức làm thêm 1–2 lần. Chưa được 5 lần thì nhảy lên, hạ chậm 5 giây"],["invrow",3,"12","Dùng xà thấp ngang hông"],["pike",3,"8–10","Chống chân lên ghế đá cho khó hơn"],["lateral",4,"15–20","Mang tạ 5kg ra công viên"],["rearfly",3,"15","Tạ 5kg"],["legraise",3,"10","Treo trên xà đơn"]]},
+  L:{t:"Chân + bụng (công viên)",s:"Ghế đá, bãi cỏ, tạ 7kg",list:[["bulgarian",3,"12","Mỗi chân, gác chân lên ghế đá"],["jumpsq",3,"15"],["slrdl",3,"12","Mỗi chân, tạ 7kg"],["bridge",3,"12","Một chân, tựa vai lên ghế đá"],["plank",3,"45s"],["walkh",1,"10′","Chạy chậm quanh công viên"]]},
+  B:{t:"Ngực, tay, lưng (công viên)",s:"Xà kép, xà đơn, xà thấp",list:[["dips",3,"5–12","Dừng khi còn sức làm thêm 1–2 lần. Chưa lên được thì chống xà kép giữ 20 giây"],["pushup",3,"10–25","Dừng khi còn sức làm thêm 1–2 lần"],["invrow",3,"12","Dùng xà thấp ngang hông"],["pullup",3,"5–10","Nắm ngửa tay để tập thêm bắp tay trước"],["lateral",4,"15–20","Mang tạ 5kg ra công viên"],["rearfly",3,"15","Tạ 5kg"]]},
+  F:{t:"Toàn thân (công viên)",s:"Xà đơn, xà kép, rồi chạy bộ",list:[["pullup",3,"5–10","Dừng khi còn sức làm thêm 1–2 lần"],["dips",3,"5–12","Dừng khi còn sức làm thêm 1–2 lần"],["invrow",3,"12","Dùng xà thấp ngang hông"],["lateral",3,"15–20","Mang tạ 5kg ra công viên"],["legraise",3,"10","Treo trên xà đơn"],["walkh",1,"20′","Chạy chậm hoặc đi bộ nhanh quanh công viên"]]}
+};
+/* 5-minute warm-up shown at the top of every session */
+const WARM = {
+  home:["Nhảy tại chỗ hoặc chạy bước nhỏ 1 phút.","Xoay vai, xoay hông, xoay cổ tay mỗi chiều 10 vòng.","Squat không tạ 10 lần, hít đất chống gối 8 lần.","Làm 1 hiệp nhẹ của bài đầu tiên với nửa mức tạ."],
+  park:["Chạy chậm 2 phút quanh công viên.","Xoay vai, xoay hông, xoay cổ tay mỗi chiều 10 vòng.","Treo người trên xà 2 lần × 20 giây.","Kéo bả vai trên xà: treo thẳng tay, chỉ kéo bả vai xuống rồi thả, 2 × 8 lần."],
+  gym:["Đạp xe hoặc đi bộ nhanh 3 phút.","Xoay vai, xoay hông mỗi chiều 10 vòng.","Kéo cáp về mặt nhẹ 1 × 15 lần để làm nóng vai.","Làm 1–2 hiệp nhẹ của bài đầu tiên với nửa mức tạ."]
 };
 const PLAN = {home:H, park:P, gym:W};
 const MODE_NAME = {home:"ở nhà", park:"công viên", gym:"phòng gym"};
@@ -588,6 +676,7 @@ function renderSession(){
   el.innerHTML=`
     <div class="session-head"><h2>${FULL[day]} · ${w.t}</h2><span class="progress" id="prog">${countDone()}/${total} hiệp</span></div>
     <p class="muted" style="margin-top:-6px">${w.s}. Bấm ô số sau mỗi hiệp, ghi số lần và mức tạ. Đồng hồ nghỉ ${mode==="gym"?90:60} giây tự chạy.</p>
+    <details class="howto" id="warm-${mode}-${wk}"><summary>🔥 Khởi động 5 phút trước khi tập</summary><div class="body"><ol>${WARM[mode].map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div></details>
     ${day!==todayIdx?`<p class="cue banner">Đang xem lịch ${FULL[day]}. Những gì anh ghi sẽ lưu vào nhật ký hôm nay (${fmtDate(todayKey)}).</p>`:""}
     ${w.list.map(([id,sets,reps,note],ei)=>{const e=EX[id];const st=L.sets["e"+ei]||[];return `
       <article class="ex${e.key?" key":""}">
@@ -601,6 +690,15 @@ function renderSession(){
           <label for="kg-${mode}-${wk}-${ei}">Tạ (kg)<input id="kg-${mode}-${wk}-${ei}" data-e="${ei}" data-f="kg" inputmode="decimal" placeholder="—" value="${esc(L.kg["e"+ei]||"")}" autocomplete="off"></label>
         </div>
         <p class="cue">${note?`<b>${esc(note)}.</b> `:""}${esc(e.tip)}</p>
+        <details class="howto" id="how-${mode}-${wk}-${ei}">
+          <summary>Hướng dẫn chi tiết</summary>
+          <div class="body">
+            ${MORE[id]?`<p class="cue"><b>Cơ chính:</b> ${esc(MORE[id][0])}</p>`:""}
+            <ol>${e.how.map(h=>`<li>${esc(h)}</li>`).join("")}</ol>
+            ${MORE[id]&&MORE[id][1]?`<p class="cue"><b>Lỗi hay gặp:</b> ${esc(MORE[id][1])}</p>`:""}
+            ${MORE[id]&&MORE[id][2]!==""?`<p class="cue"><b>Thở:</b> ${esc(MORE[id][2]||"thở ra khi dùng sức, hít vào khi hạ về.")}</p>`:""}
+          </div>
+        </details>
         <a class="link" href="${yt(e.yt)}" target="_blank" rel="noopener">Xem video mẫu ↗</a>
       </article>`}).join("")}
     <article class="ex">
@@ -650,25 +748,41 @@ function lineChart(pts,unit){
   const W=340,H=150,L=34,R=40,T=12,B=24;
   const xs=pts.map(p=>keyToDate(p.x).getTime()),x0=Math.min(...xs),x1=Math.max(...xs);
   const r=niceRange(Math.min(...pts.map(p=>p.y)),Math.max(...pts.map(p=>p.y)));
+  const lbl=k=>x1-x0>200*864e5?shortDate(k)+"/"+k.slice(2,4):shortDate(k);
   const X=t=>L+(x1===x0?0.5:(t-x0)/(x1-x0))*(W-L-R), Y=v=>T+(1-(v-r.lo)/(r.hi-r.lo))*(H-T-B);
   let grid="";for(let v=r.lo;v<=r.hi+1e-9;v+=r.step)grid+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" class="g"/><text x="${L-6}" y="${Y(v)+4}" class="ax" text-anchor="end">${fmtNum(v)}</text>`;
   const d=pts.map((p,i)=>(i?"L":"M")+X(xs[i]).toFixed(1)+" "+Y(p.y).toFixed(1)).join(" ");
   const last=pts[pts.length-1];
-  const dots=pts.map((p,i)=>`<circle cx="${X(xs[i])}" cy="${Y(p.y)}" r="4" class="dot"/><circle cx="${X(xs[i])}" cy="${Y(p.y)}" r="13" class="hit" data-tip="${shortDate(p.x)}: ${fmtNum(p.y)} ${unit}"/>`).join("");
+  const dense=pts.length>30;
+  const dots=pts.map((p,i)=>`${dense&&i<pts.length-1?"":`<circle cx="${X(xs[i])}" cy="${Y(p.y)}" r="4" class="dot"/>`}<circle cx="${X(xs[i])}" cy="${Y(p.y)}" r="13" class="hit" data-tip="${shortDate(p.x)}: ${fmtNum(p.y)} ${unit}"/>`).join("");
   return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Biểu đồ đường, ${pts.length} lần ghi">${grid}
-    <text x="${L}" y="${H-6}" class="ax">${shortDate(pts[0].x)}</text><text x="${W-R}" y="${H-6}" class="ax" text-anchor="end">${shortDate(last.x)}</text>
+    <text x="${L}" y="${H-6}" class="ax">${lbl(pts[0].x)}</text><text x="${W-R}" y="${H-6}" class="ax" text-anchor="end">${lbl(last.x)}</text>
     <path d="${d}" class="ln"/>${dots}
     <text x="${X(xs[xs.length-1])+8}" y="${Y(last.y)+4}" class="val">${fmtNum(last.y)}</text></svg>`;
 }
-function barChart(weeks){
-  const W=340,H=150,L=22,R=8,T=12,B=24,max=Math.max(5,...weeks.map(w=>w.n));
-  const bw=(W-L-R)/weeks.length, Y=v=>T+(1-v/max)*(H-T-B), base=Y(0);
-  let grid="";for(let v=0;v<=max;v+=max>6?2:1)grid+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" class="g"/><text x="${L-5}" y="${Y(v)+4}" class="ax" text-anchor="end">${v}</text>`;
-  const bars=weeks.map((w,i)=>{const x=L+i*bw+2,wd=bw-4,y=Y(w.n),r=Math.min(4,(base-y)/2,wd/2);
-    const p=w.n?`<path d="M${x} ${base}V${y+r}Q${x} ${y} ${x+r} ${y}H${x+wd-r}Q${x+wd} ${y} ${x+wd} ${y+r}V${base}Z" class="${w.n>=4?"bar ok":"bar"}"/>`:"";
-    return p+`<rect x="${x}" y="${T}" width="${wd}" height="${base-T}" class="hit" data-tip="Tuần ${shortDate(w.k)}: ${w.n} buổi"/>`+`<text x="${x+wd/2}" y="${H-6}" class="ax" text-anchor="middle">${shortDate(w.k)}</text>`}).join("");
-  return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Số buổi tập mỗi tuần, 8 tuần gần nhất">${grid}
-    <line x1="${L}" x2="${W-R}" y1="${Y(4)}" y2="${Y(4)}" class="goal"/><text x="${W-R}" y="${Y(4)-4}" class="ax" text-anchor="end">mục tiêu 4</text>${bars}</svg>`;
+/* buckets: [{label, tip, n}], goal: sessions per bucket that counts as on target */
+function barChart(buckets,goal,aria){
+  const W=340,H=150,L=24,R=8,T=12,B=24,max=Math.max(goal+1,...buckets.map(w=>w.n));
+  const step=max>30?10:max>12?5:max>6?2:1;
+  const bw=(W-L-R)/buckets.length, Y=v=>T+(1-v/max)*(H-T-B), base=Y(0);
+  let grid="";for(let v=0;v<=max;v+=step)grid+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" class="g"/><text x="${L-5}" y="${Y(v)+4}" class="ax" text-anchor="end">${v}</text>`;
+  const bars=buckets.map((w,i)=>{const x=L+i*bw+2,wd=bw-4,y=Y(w.n),r=Math.min(4,(base-y)/2,wd/2);
+    const p=w.n?`<path d="M${x} ${base}V${y+r}Q${x} ${y} ${x+r} ${y}H${x+wd-r}Q${x+wd} ${y} ${x+wd} ${y+r}V${base}Z" class="${w.n>=goal?"bar ok":"bar"}"/>`:"";
+    return p+`<rect x="${x}" y="${T}" width="${wd}" height="${base-T}" class="hit" data-tip="${w.tip}: ${w.n} buổi"/>`+`<text x="${x+wd/2}" y="${H-6}" class="ax" text-anchor="middle">${w.label}</text>`}).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="${aria}">${grid}
+    <line x1="${L}" x2="${W-R}" y1="${Y(goal)}" y2="${Y(goal)}" class="goal"/><text x="${W-R}" y="${Y(goal)-4}" class="ax" text-anchor="end">mục tiêu ${goal}</text>${bars}</svg>`;
+}
+let chartRange=store.get("range","8w"), histLimit=20;
+function sessionBuckets(dates){
+  const thisWeek=weekStart(todayKey);
+  if(chartRange==="8w"){
+    const out=[];for(let i=7;i>=0;i--){const d=keyToDate(thisWeek);d.setDate(d.getDate()-7*i);const k=localKey(d);out.push({label:shortDate(k),tip:"Tuần "+shortDate(k),n:dates.filter(x=>weekStart(x)===k).length})}
+    return {title:"Số buổi mỗi tuần",goal:4,buckets:out,aria:"Số buổi tập mỗi tuần, 8 tuần gần nhất"};
+  }
+  const months=chartRange==="6m"?6:12,now=keyToDate(todayKey),out=[];
+  for(let i=months-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const pre=localKey(d).slice(0,7);
+    out.push({label:"T"+(d.getMonth()+1),tip:"Tháng "+(d.getMonth()+1)+"/"+d.getFullYear(),n:dates.filter(x=>x.startsWith(pre)).length})}
+  return {title:"Số buổi mỗi tháng",goal:16,buckets:out,aria:"Số buổi tập mỗi tháng, "+months+" tháng gần nhất"};
 }
 function bestSeries(exId){
   const m={};workouts().forEach(L=>(L.ex||[]).forEach(x=>{if(x.id===exId&&x.best>0)m[L.date]=Math.max(m[L.date]||0,x.best)}));
@@ -681,7 +795,7 @@ function renderLog(){
   const thisWeek=weekStart(todayKey);
   const weekCount=dates.filter(d=>weekStart(d)===thisWeek).length;
   const sets=ws.reduce((a,w)=>a+(w.done||0),0);
-  const weeks=[];for(let i=7;i>=0;i--){const d=keyToDate(thisWeek);d.setDate(d.getDate()-7*i);const k=localKey(d);weeks.push({k,n:dates.filter(x=>weekStart(x)===k).length})}
+  const sb=sessionBuckets(dates);
   const kg=bs.filter(b=>b.kg).map(b=>({x:b.date,y:b.kg})), waist=bs.filter(b=>b.waist).map(b=>({x:b.date,y:b.waist}));
   const lastKg=kg.length?kg[kg.length-1].y:null, diffKg=kg.length>1?lastKg-kg[0].y:null;
   const lastW=waist.length?waist[waist.length-1].y:null, diffW=waist.length>1?lastW-waist[0].y:null;
@@ -689,24 +803,29 @@ function renderLog(){
     <div class="tiles">
       <div><span>Tuần này</span><b>${weekCount}<small>/4 buổi</small></b></div>
       <div><span>Tổng số buổi</span><b>${dates.length}</b></div>
-      <div><span>Cân nặng</span><b>${lastKg!=null?fmtNum(lastKg)+"<small> kg</small>":"—"}</b>${diffKg!=null?`<em>${diffKg<=0?"↓ "+fmtNum(-diffKg):"↑ "+fmtNum(diffKg)} kg từ lần đầu</em>`:""}</div>
-      <div><span>Vòng eo</span><b>${lastW!=null?fmtNum(lastW)+"<small> cm</small>":"—"}</b>${diffW!=null?`<em>${diffW<=0?"↓ "+fmtNum(-diffW):"↑ "+fmtNum(diffW)} cm từ lần đầu</em>`:""}</div>
+      <div><span>Cân nặng</span><b>${lastKg!=null?fmtNum(lastKg)+"<small> kg</small>":"—"}</b>${diffKg!=null?`<em class="${diffKg>0?"up":""}">${diffKg<=0?"↓ "+fmtNum(-diffKg):"↑ "+fmtNum(diffKg)} kg từ lần đầu</em>`:""}</div>
+      <div><span>Vòng eo</span><b>${lastW!=null?fmtNum(lastW)+"<small> cm</small>":"—"}</b>${diffW!=null?`<em class="${diffW>0?"up":""}">${diffW<=0?"↓ "+fmtNum(-diffW):"↑ "+fmtNum(diffW)} cm từ lần đầu</em>`:""}</div>
     </div>
     <p class="cue">Tổng cộng ${sets} hiệp đã tập.</p>
-    <h2>Số buổi mỗi tuần</h2>${barChart(weeks)}
+    <h2>${sb.title}</h2>
+    <div class="chips" role="radiogroup" aria-label="Khoảng thời gian">${[["8w","8 tuần"],["6m","6 tháng"],["12m","1 năm"]].map(([v,t])=>`<button class="chip" id="range-${v}" data-range="${v}" role="radio" aria-pressed="${chartRange===v}" aria-checked="${chartRange===v}">${t}</button>`).join("")}</div>
+    ${barChart(sb.buckets,sb.goal,sb.aria)}
     <h2>Cân nặng (kg)</h2>${lineChart(kg,"kg")}
     <h2>Vòng eo (cm)</h2>${lineChart(waist,"cm")}
     <h2>Kéo xà: số lần cao nhất</h2>${lineChart(bestSeries("pullup"),"lần")}
     <h2>Hít đất: số lần cao nhất</h2>${lineChart(bestSeries("pushup"),"lần")}
-    <h2>Các buổi đã tập</h2>
-    ${ws.length?ws.slice(0,40).map(L=>`
+    <h2>Các buổi đã tập${ws.length?` <small class="muted">(${ws.length} buổi)</small>`:""}</h2>
+    ${ws.length?ws.slice(0,histLimit).map(L=>`
       <article class="hist">
         <div class="hist-top"><b>${fmtDate(L.date)}</b><span class="muted">${MODE_ICON[L.mode]||""}</span></div>
         <div>${esc(L.title||"")} · <b>${L.done||0}/${L.total||0} hiệp</b>${L.feel?` · cảm nhận: ${esc(L.feel)}`:""}</div>
         <ul class="plain hist-ex">${(L.ex||[]).filter(x=>x.done||x.reps||x.kg).map(x=>`<li><span>${esc(x.n)}</span><span class="muted">${x.done}/${x.total} hiệp${x.reps?" · "+esc(x.reps)+" lần":""}${x.kg?" · "+esc(x.kg)+" kg":""}</span></li>`).join("")}</ul>
         ${L.note?`<p class="cue">📝 ${esc(L.note)}</p>`:""}
         <button class="reset" id="del-${L.id}" data-del="${L.id}">Xoá buổi này</button>
-      </article>`).join(""):`<div class="rest"><b>Chưa có buổi nào</b><p class="muted">Vào tab Tập, bấm ô số sau mỗi hiệp. Buổi tập sẽ tự hiện ở đây.</p></div>`}`;
+      </article>`).join("")+(ws.length>histLimit?`<button class="chip" id="hist-more" type="button">Xem thêm ${Math.min(20,ws.length-histLimit)} buổi cũ hơn (còn ${ws.length-histLimit})</button>`:""):`<div class="rest"><b>Chưa có buổi nào</b><p class="muted">Vào tab Tập, bấm ô số sau mỗi hiệp. Buổi tập sẽ tự hiện ở đây.</p></div>`}`;
+  box.querySelectorAll("[data-range]").forEach(b=>b.onclick=()=>{chartRange=b.dataset.range;store.set("range",chartRange);renderLog()});
+  const more=document.getElementById("hist-more");
+  if(more) more.onclick=()=>{histLimit+=20;renderLog()};
   box.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
     if(b.dataset.armed){removeDoc(b.dataset.del);renderLog();renderSession();return}
     b.dataset.armed="1";b.textContent="Bấm lần nữa để xoá";
@@ -744,12 +863,13 @@ function renderWeek(){
 
 function renderGuide(){
   const groups={};
-  Object.entries(EX).forEach(([id,e])=>(groups[e.g]=groups[e.g]||[]).push(e));
+  Object.entries(EX).forEach(([id,e])=>(groups[e.g]=groups[e.g]||[]).push(Object.assign({id},e)));
   document.getElementById("guidelist").innerHTML=Object.entries(groups).map(([g,list])=>
     `<div class="group-label">${g}</div>`+list.map(e=>`
     <details><summary><span>${esc(e.n)} <span class="ex-en">· ${esc(e.en)}</span></span></summary>
       <div class="body"><ol>${e.how.map(h=>`<li>${esc(h)}</li>`).join("")}</ol>
       <p class="cue"><b>Mẹo:</b> ${esc(e.tip)}</p>
+      ${MORE[e.id]?`<p class="cue"><b>Cơ chính:</b> ${esc(MORE[e.id][0])}</p><p class="cue"><b>Lỗi hay gặp:</b> ${esc(MORE[e.id][1])}</p>`:""}
       <a class="link" href="${yt(e.yt)}" target="_blank" rel="noopener">Xem video mẫu ↗</a></div>
     </details>`).join("")).join("");
 }
@@ -781,23 +901,127 @@ document.querySelectorAll(".timer [data-sec]").forEach(b=>b.onclick=()=>startTim
 tstop.onclick=()=>{stopTimer();clock.textContent="0:00";tlab.textContent="Nghỉ giữa hiệp";timer.classList.remove("ring")};
 
 renderAll();renderGuide();initBodyForm();renderLog();
-/* backup */
-document.getElementById("backup-save").onclick=()=>{
-  const blob=new Blob([JSON.stringify({app:"so-tay-chu-v",version:1,savedAt:new Date().toISOString(),logs},null,1)],{type:"application/json"});
+/* ---- progress photos: compressed JPEGs kept in IndexedDB on this phone ---- */
+const photoDB=new Promise((res,rej)=>{
+  try{const rq=indexedDB.open("chu-v",1);
+    rq.onupgradeneeded=()=>rq.result.createObjectStore("photos",{keyPath:"id"});
+    rq.onsuccess=()=>{const db=rq.result;db.onversionchange=()=>db.close();res(db)};rq.onerror=()=>rej(rq.error);
+  }catch(e){rej(e)}
+});
+function tx(mode,fn){return photoDB.then(db=>new Promise((res,rej)=>{const t=db.transaction("photos",mode),s=t.objectStore("photos");const out=fn(s);t.oncomplete=()=>res(out&&out.result);t.onerror=()=>rej(t.error)}))}
+const getPhotos=()=>tx("readonly",s=>s.getAll()).then(a=>(a||[]).sort((x,y)=>x.date<y.date?-1:x.date>y.date?1:x.createdAt-y.createdAt));
+const putPhoto=p=>tx("readwrite",s=>s.put(p));
+const delPhoto=id=>tx("readwrite",s=>s.delete(id));
+
+function compress(file){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file),img=new Image();
+    img.onload=()=>{
+      const max=1280,k=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+      const c=document.createElement("canvas");c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+      c.toBlob(b=>b?res(b):rej(new Error("encode")),"image/jpeg",0.82);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("decode"))};
+    img.src=url;
+  });
+}
+
+let photoList=[], photoURLs=[], viewIdx=-1, galleryOpen=false;
+const galToggle=document.getElementById("gallery-toggle");
+function syncGallery(collapsible,count,days){
+  const gal=document.getElementById("gallery");
+  galToggle.hidden=!collapsible;
+  gal.hidden=collapsible&&!galleryOpen;
+  galToggle.setAttribute("aria-expanded",String(!gal.hidden));
+  galToggle.textContent=galleryOpen?"Thu gọn album ▴":"Xem tất cả "+count+" ảnh · "+days+" ngày ▾";
+}
+galToggle.onclick=()=>{
+  galleryOpen=!galleryOpen;
+  syncGallery(true,photoList.length,new Set(photoList.map(p=>p.date)).size);
+  if(!galleryOpen) galToggle.scrollIntoView({block:"center"});
+};
+function urlFor(p){const u=URL.createObjectURL(p.blob);photoURLs.push(u);return u}
+async function renderPhotos(){
+  const gal=document.getElementById("gallery"),cmp=document.getElementById("compare");
+  try{photoList=await getPhotos()}catch(e){gal.innerHTML=`<p class="cue">Điện thoại này không cho lưu ảnh trong app.</p>`;return}
+  photoURLs.forEach(u=>URL.revokeObjectURL(u));photoURLs=[];
+  photoList.forEach(p=>p.url=urlFor(p));
+  if(photoList.length>=2&&photoList[0].date!==photoList[photoList.length-1].date){
+    // first photo of the first day vs first photo of the latest day, so the same pose is compared
+    const a=photoList[0],lastDate=photoList[photoList.length-1].date,bi=photoList.findIndex(p=>p.date===lastDate),b=photoList[bi];
+    const days=Math.round((keyToDate(b.date)-keyToDate(a.date))/864e5);
+    cmp.innerHTML=`<h3 style="margin-bottom:6px">Trước và sau · ${days} ngày</h3><div class="compare">
+      <figure><img src="${a.url}" data-i="0" alt="Ảnh ngày đầu"><figcaption><b>Ngày đầu</b> · ${fmtDate(a.date)}</figcaption></figure>
+      <figure><img src="${b.url}" data-i="${bi}" alt="Ảnh mới nhất"><figcaption><b>Mới nhất</b> · ${fmtDate(b.date)}</figcaption></figure></div>`;
+  }else cmp.innerHTML="";
+  const byDate={};photoList.forEach((p,i)=>{(byDate[p.date]=byDate[p.date]||[]).push(i)});
+  const dates=Object.keys(byDate).sort().reverse();
+  gal.innerHTML=dates.length?dates.map(d=>`<div class="pday"><div class="pday-date">${fmtDate(d)}</div><div class="thumbs">${byDate[d].map(i=>`<button type="button" id="ph-${photoList[i].id}" data-i="${i}" aria-label="Xem ảnh ${fmtDate(d)}"><img src="${photoList[i].url}" alt="" loading="lazy"></button>`).join("")}</div></div>`).join("")
+    :`<p class="cue empty">Chưa có ảnh nào. Bấm "Thêm ảnh hôm nay" để chụp hoặc chọn ảnh trong máy.</p>`;
+  document.querySelectorAll("#gallery [data-i], #compare [data-i]").forEach(el=>el.onclick=()=>openViewer(+el.dataset.i));
+  // with a before/after pair on show, the full album stays folded until asked for
+  syncGallery(cmp.innerHTML!=="",photoList.length,dates.length);
+}
+const viewer=document.getElementById("viewer"),vDel=document.getElementById("viewer-del");
+function openViewer(i){
+  if(i<0||i>=photoList.length)return;
+  viewIdx=i;const p=photoList[i];
+  document.getElementById("viewer-img").src=p.url;
+  document.getElementById("viewer-date").textContent=fmtDate(p.date)+" · "+(i+1)+"/"+photoList.length;
+  delete vDel.dataset.armed;vDel.textContent="Xoá ảnh";
+  viewer.hidden=false;
+}
+document.getElementById("viewer-close").onclick=()=>{viewer.hidden=true};
+document.getElementById("viewer-prev").onclick=()=>openViewer(viewIdx-1);
+document.getElementById("viewer-next").onclick=()=>openViewer(viewIdx+1);
+vDel.onclick=async()=>{
+  if(!vDel.dataset.armed){vDel.dataset.armed="1";vDel.textContent="Bấm lần nữa để xoá";return}
+  await delPhoto(photoList[viewIdx].id);viewer.hidden=true;renderPhotos();
+};
+document.addEventListener("keydown",e=>{if(viewer.hidden)return;if(e.key==="Escape")viewer.hidden=true;if(e.key==="ArrowLeft")openViewer(viewIdx-1);if(e.key==="ArrowRight")openViewer(viewIdx+1)});
+document.getElementById("photo-input").onchange=async e=>{
+  const files=[...e.target.files],msg=document.getElementById("photo-msg");e.target.value="";
+  if(!files.length)return;
+  msg.textContent="Đang lưu ảnh…";let ok=0;
+  for(const f of files){
+    try{const blob=await compress(f);await putPhoto({id:"p_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),date:todayKey,blob,createdAt:Date.now()});ok++}
+    catch(err){}
+  }
+  msg.textContent=ok===files.length?"Đã lưu "+ok+" ảnh vào ngày "+fmtDate(todayKey)+".":
+    ok?"Đã lưu "+ok+"/"+files.length+" ảnh. Ảnh còn lại không đọc được, hãy thử chụp lại.":
+    "Không lưu được ảnh. Hãy thử chụp lại hoặc chọn ảnh khác.";
+  renderPhotos();
+};
+renderPhotos();
+
+/* backup: journal + photos in one .json file */
+const blobToData=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
+const dataToBlob=d=>fetch(d).then(r=>r.blob());
+document.getElementById("backup-save").onclick=async()=>{
+  const msg=document.getElementById("backup-msg");msg.textContent="Đang tạo bản sao lưu…";
+  let photos=[];try{photos=await Promise.all((await getPhotos()).map(async p=>({id:p.id,date:p.date,createdAt:p.createdAt,data:await blobToData(p.blob)})))}catch(e){}
+  const blob=new Blob([JSON.stringify({app:"so-tay-chu-v",version:2,savedAt:new Date().toISOString(),logs,photos})],{type:"application/json"});
   const url=URL.createObjectURL(blob),link=document.createElement("a");
   link.href=url;link.download="so-tay-chu-v-"+todayKey+".json";document.body.appendChild(link);link.click();link.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),5000);
-  document.getElementById("backup-msg").textContent="Đã tạo tệp sao lưu. Gửi tệp này vào Zalo hoặc Drive để giữ an toàn.";
+  setTimeout(()=>URL.revokeObjectURL(url),10000);
+  msg.textContent="Đã tạo tệp sao lưu ("+(blob.size/1048576).toFixed(1).replace(".",",")+" MB, gồm "+photos.length+" ảnh). Gửi tệp này vào Zalo hoặc Drive để giữ an toàn.";
 };
 document.getElementById("backup-file").onchange=e=>{
   const f=e.target.files[0],msg=document.getElementById("backup-msg");if(!f)return;
   const r=new FileReader();
-  r.onload=()=>{try{
+  r.onload=async()=>{try{
     const data=JSON.parse(r.result);
     if(!data||data.app!=="so-tay-chu-v"||typeof data.logs!=="object") throw 0;
     let n=0;Object.entries(data.logs).forEach(([id,L])=>{const cur=logs[id];if(!cur||(L.updatedAt||0)>(cur.updatedAt||0)){logs[id]=L;n++}});
     store.set("logs",logs);renderLog();renderSession();initBodyForm();
-    msg.textContent="Đã khôi phục "+n+" mục từ bản sao lưu.";
+    let m=0;
+    if(Array.isArray(data.photos)){
+      const have=new Set((await getPhotos()).map(p=>p.id));
+      for(const p of data.photos){if(have.has(p.id)||!p.data)continue;try{await putPhoto({id:p.id,date:p.date,createdAt:p.createdAt,blob:await dataToBlob(p.data)});m++}catch(err){}}
+      renderPhotos();
+    }
+    msg.textContent="Đã khôi phục "+n+" mục nhật ký và "+m+" ảnh.";
   }catch(err){msg.textContent="Tệp này không phải bản sao lưu của Sổ tay chữ V. Hãy chọn tệp .json đã tải trước đó."}
   e.target.value="";};
   r.readAsText(f);
