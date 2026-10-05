@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sổ tay chữ V</title>
+<meta name="description" content="Lịch tập, nhật ký và thực đơn cho dáng chữ V">
+<meta name="theme-color" content="#18202a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chữ V">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one narrow phone column; sticky tab bar on top, rest timer pinned to the bottom. Plate-colour accents over cool iron neutrals. */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#18202a; --muted:#5d6977; --line:#d6dce3;
+  --accent:#d9480f; --accent-ink:#ffffff; --done:#2b8a3e; --soft:#fbe9e1;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171d; --surface:#1b222b; --ink:#e8edf2; --muted:#9aa6b3; --line:#2c3642;
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --done:#51cf66; --soft:#3a2216; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171d; --surface:#1b222b; --ink:#e8edf2; --muted:#9aa6b3; --line:#2c3642;
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --done:#51cf66; --soft:#3a2216; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px)}
+body{margin:0}
+#backup-pick{display:inline-flex;align-items:center}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:0 96px}
+.wrap{max-width:560px;margin:0 auto}
+header{padding-block:22px 10px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-size:40px;line-height:1;margin:4px 0 6px;font-weight:800;letter-spacing:.01em;text-wrap:balance}
+h1 span{color:var(--accent)}
+.stats{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--muted);font-size:13px}
+.stats b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding-block:8px;margin-bottom:8px}
+nav button{font:600 12px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 2px;border-radius:8px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+h2{font-family:var(--display);font-size:26px;font-weight:700;margin:18px 0 8px;line-height:1.1;text-wrap:balance}
+h3{font-size:15px;margin:0}
+p{margin:0}
+.muted{color:var(--muted)}
+.section{display:flex;flex-direction:column;gap:10px}
+
+/* mode switch */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{font:700 14px var(--body);text-align:left;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
+.seg small{font-size:11px;font-weight:500;color:var(--muted)}
+.seg button[aria-checked="true"]{border-color:var(--accent);background:var(--soft)}
+.seg button[aria-checked="true"] small{color:var(--ink)}
+/* day picker */
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.days button{font:600 12px var(--body);padding:8px 0;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.days button i{font-style:normal;font-size:10px;font-weight:500}
+.days button.train{color:var(--ink)}
+.days button.train i{color:var(--accent)}
+.days button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+
+.session-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.progress{font:700 18px var(--display);color:var(--accent);font-variant-numeric:tabular-nums}
+
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.ex.key{border-left:4px solid var(--accent)}
+.ex-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.ex-top>div{min-width:0}
+.ex-name{font-weight:700}
+.ex-en{font-size:12px;color:var(--muted)}
+.dose{font:700 20px var(--display);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:11px;font-weight:600;background:var(--soft);color:var(--accent);border-radius:4px;padding:1px 6px;margin-top:4px}
+.sets{display:flex;flex-wrap:wrap;gap:6px}
+.set{width:44px;height:40px;border-radius:8px;border:1.5px solid var(--line);background:transparent;color:var(--muted);font:700 15px var(--display);cursor:pointer;font-variant-numeric:tabular-nums}
+.set.on{background:var(--done);border-color:var(--done);color:var(--surface)}
+.cue{font-size:13px;color:var(--muted)}
+.cue b{color:var(--ink);font-weight:600}
+.link{font-size:13px;color:var(--accent);font-weight:600;text-decoration:none}
+.reset{align-self:flex-start;font:500 13px var(--body);background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px 0}
+
+.rest{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:18px;text-align:center}
+.rest b{font-family:var(--display);font-size:24px;display:block}
+
+.flow{display:flex;flex-direction:column;gap:8px}
+.flow li{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:baseline}
+.flow time{font:700 17px var(--display);color:var(--muted);font-variant-numeric:tabular-nums}
+ul.plain{list-style:none;margin:0;padding:0}
+
+/* week */
+.week{display:flex;flex-direction:column;gap:6px}
+.week li{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.week li.off{background:transparent}
+.week .d{font:700 17px var(--display)}
+.week .t{font-weight:600}
+.week .s{font-size:12px;color:var(--muted)}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px}
+.split div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.split span{display:block;font-size:12px;color:var(--muted)}
+.split b{font:700 18px var(--display)}
+
+/* guide */
+details{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+summary{padding:12px 14px;cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--muted);font-weight:700}
+details[open] summary::after{content:"−"}
+details .body{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px}
+details ol{margin:0;padding-left:20px}
+.group-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:10px}
+
+/* food */
+table{border-collapse:collapse;width:100%;font-size:14px}
+td{padding:8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:12px}
+.meal{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.meal time{font:700 16px var(--display);color:var(--accent)}
+.rules li{padding:8px 0;border-bottom:1px solid var(--line)}
+.rules li:last-child{border:none}
+
+/* timer */
+.timer{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--ink);color:var(--bg);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+.timer .in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:8px}
+.timer .clock{font:800 30px var(--display);font-variant-numeric:tabular-nums;min-width:72px}
+.timer .lab{font-size:11px;opacity:.7;line-height:1.2;flex:1;min-width:0}
+.timer button{font:700 14px var(--body);border:none;border-radius:8px;padding:9px 10px;background:color-mix(in srgb,var(--bg) 16%,transparent);color:var(--bg);cursor:pointer}
+.timer button.stop{background:var(--accent);color:var(--accent-ink)}
+.timer.ring .clock{color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){.timer.ring{animation:pulse .5s ease-in-out 4}}
+@keyframes pulse{50%{opacity:.6}}
+/* journal */
+.logrow{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.logrow label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted);min-width:0}
+input,textarea{font:500 15px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+textarea{resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:600 13px var(--body);padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.banner{background:var(--soft);border-radius:8px;padding:8px 10px;color:var(--ink)}
+.primary{align-self:flex-start;font:700 14px var(--body);background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;padding:10px 16px;cursor:pointer}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tiles>div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tiles span{font-size:12px;color:var(--muted)}
+.tiles b{font:800 28px var(--display);font-variant-numeric:tabular-nums;line-height:1.1}
+.tiles small{font:600 13px var(--body);color:var(--muted)}
+.tiles em{font-style:normal;font-size:12px;color:var(--done);font-weight:600}
+.chart{width:100%;max-width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.chart .g{stroke:var(--line);stroke-width:1}
+.chart .ax{fill:var(--muted);font:500 10px var(--body)}
+.chart .val{fill:var(--ink);font:700 12px var(--body)}
+.chart .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart .dot{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.chart .hit{fill:transparent;cursor:pointer}
+.chart .bar{fill:var(--muted);opacity:.55}
+.chart .bar.ok{fill:var(--accent);opacity:1}
+.chart .goal{stroke:var(--ink);stroke-width:1;stroke-dasharray:4 3;opacity:.6}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:12px}
+.hist{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.hist-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.hist-ex li{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0;border-bottom:1px solid var(--line)}
+.hist-ex li:last-child{border:none}
+.hist-ex li span:last-child{text-align:right}
+.tip{position:fixed;z-index:20;background:var(--ink);color:var(--bg);font:600 12px var(--body);padding:5px 8px;border-radius:6px;pointer-events:none;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Sổ tay tập luyện</div>
+    <h1>Eo gọn, vai rộng.<br><span>Dáng chữ V.</span></h1>
+    <div class="stats">
+      <span><b>4 buổi</b> mỗi tuần</span>
+      <span>Giảm <b>0,3–0,5 kg/tuần</b></span>
+    </div>
+  </header>
+
+  <nav role="tablist">
+    <button role="tab" id="tab-home" data-tab="home">Tập</button>
+    <button role="tab" id="tab-log" data-tab="log">Nhật ký</button>
+    <button role="tab" id="tab-week" data-tab="week">Lịch</button>
+    <button role="tab" id="tab-guide" data-tab="guide">Động tác</button>
+    <button role="tab" id="tab-food" data-tab="food">Ăn uống</button>
+  </nav>
+
+  <!-- TRAIN -->
+  <section class="section" id="p-home" role="tabpanel" hidden>
+    <div class="seg" id="modes" role="radiogroup" aria-label="Chế độ tập">
+      <button id="mode-home" data-m="home" role="radio">🏠 Ở nhà<small>Tạ 5kg, 7kg · 19h20</small></button>
+      <button id="mode-park" data-m="park" role="radio">🌳 Công viên<small>Xà đơn, xà kép</small></button>
+      <button id="mode-gym" data-m="gym" role="radio">🏋️ Gym<small>Máy và tạ</small></button>
+    </div>
+    <div class="days" id="days"></div>
+    <div id="session" class="section"></div>
+    <div id="extra-park" class="section" hidden>
+      <h2>Tập ở công viên</h2>
+      <ul class="plain rules">
+        <li>Tối: về đến nhà 19h15, ra công viên tập 19h20–20h20, tập xong đi chợ luôn.</li>
+        <li>Sáng (nếu dậy được): tập 45 phút trước khi ăn sáng. Tối hôm đó đi chợ thoải mái.</li>
+        <li>Mang theo nước, khăn. Nếu có thể, mang tạ 5kg để tập thêm dang tay ngang.</li>
+        <li>Xà ướt sau mưa rất trơn. Lau khô hoặc đổi sang chế độ Ở nhà.</li>
+        <li>Kéo xà đơn được 12 lần liên tục rồi thì làm chậm hơn, hoặc đeo balo có sách.</li>
+      </ul>
+    </div>
+    <div id="extra-gym" class="section" hidden>
+      <h2>Khi ra phòng gym</h2>
+      <ul class="plain rules">
+        <li>Buổi đầu nhờ nhân viên hoặc PT chỉ cách dùng máy kéo cáp, ghế dốc.</li>
+        <li>Chọn mức tạ mà 2 lần cuối thấy nặng nhưng vẫn đúng tư thế. Ghi lại mức tạ để tuần sau tăng.</li>
+        <li>Nghỉ giữa hiệp 90 giây, đồng hồ tự chạy khi anh bấm hiệp. Một buổi khoảng 60–75 phút.</li>
+        <li>Mỗi tuần thêm 1–2 lần, hoặc tăng 1 nấc tạ (1–2,5kg).</li>
+        <li>Phòng gym gần nhà thì giữ giờ 19h20, tập xong đi chợ như ngày thường.</li>
+      </ul>
+    </div>
+    <div id="extra-home" class="section">
+    <h2>Buổi đầu: kiểm tra sức</h2>
+    <p class="muted">Làm mỗi bài 1 hiệp, đến khi không làm thêm được với đúng tư thế. Ghi số lại, 4 tuần sau làm lại để so sánh.</p>
+    <table>
+      <tr><td>Hít đất liên tục</td><td>___ lần</td></tr>
+      <tr><td>Kéo người dưới bàn liên tục</td><td>___ lần</td></tr>
+      <tr><td>Squat không tạ liên tục</td><td>___ lần</td></tr>
+      <tr><td>Plank</td><td>___ giây</td></tr>
+      <tr><td>Vòng eo (ngang rốn)</td><td>___ cm</td></tr>
+    </table>
+    <p class="cue"><b>Kéo người dưới bàn dưới 5 lần:</b> co gối lại cho dễ hơn. <b>Hít đất dưới 10 lần:</b> 2 tuần đầu chống gối. <b>Hít đất trên 25 lần:</b> kê chân lên ghế cho khó hơn.</p>
+    <h2>Dụng cụ</h2>
+    <table>
+      <tr><td><b>Tạ đơn 5kg và 7kg</b><br><span class="cue">Đang có. 5kg cho vai, 7kg cho lưng, tay, chân.</span></td><td>✅ Có</td></tr>
+      <tr><td><b>Xà đơn treo cửa</b><br><span class="cue">Nên mua đầu tiên. Có xà thì thay bài kéo bàn bằng kéo xà, lưng rộng nhanh hơn nhiều.</span></td><td>~200–350k</td></tr>
+      <tr><td><b>Bộ dây chun kháng lực</b><br><span class="cue">Mua sau, để tập kéo xuống và face pull.</span></td><td>~150–300k</td></tr>
+      <tr><td><b>Thảm tập</b></td><td>~100–200k</td></tr>
+    </table>
+    <p class="cue"><b>Khi tạ 7kg quá nhẹ</b> (làm dễ quá 20 lần): hạ chậm 3–4 giây, dừng 1 giây ở điểm khó nhất, hoặc chuyển sang bài một chân, một tay. Sau 2–3 tháng nên mua thêm cặp 10–12kg.</p>
+    <h2>Tăng độ khó khi tập ở nhà</h2>
+    <ul class="plain rules">
+      <li>Làm thêm 1–2 lần mỗi hiệp so với tuần trước.</li>
+      <li>Hạ người chậm 3 giây ở mỗi lần.</li>
+      <li>Bỏ thêm sách vào balo, hoặc chuyển sang dây chun nặng hơn.</li>
+      <li>Làm dễ được 20 lần thì chuyển sang biến thể khó hơn, ví dụ hít đất thường lên hít đất chân kê cao.</li>
+      <li>Nghỉ giữa hiệp 60–90 giây. Một buổi khoảng 45–60 phút.</li>
+    </ul>
+    </div>
+  </section>
+
+  <!-- LOG -->
+  <section class="section" id="p-log" role="tabpanel" hidden>
+    <h2>Quá trình của anh</h2>
+    <form class="ex" id="body-form">
+      <h3>Số đo hôm nay</h3>
+      <p class="cue">Cân buổi sáng sau khi đi vệ sinh, đo eo ngang rốn. Mỗi tuần 1 lần là đủ.</p>
+      <div class="logrow">
+        <label for="body-kg">Cân nặng (kg)<input id="body-kg" inputmode="decimal" placeholder="vd: 66,5" autocomplete="off"></label>
+        <label for="body-waist">Vòng eo (cm)<input id="body-waist" inputmode="decimal" placeholder="vd: 82" autocomplete="off"></label>
+      </div>
+      <button type="submit" class="primary" id="body-save">Lưu số đo</button>
+      <p class="cue" id="body-msg" aria-live="polite"></p>
+    </form>
+    <div id="logbody" class="section"></div>
+    <div class="ex" id="backup">
+      <h3>Sao lưu dữ liệu</h3>
+      <p class="cue">Nhật ký lưu ngay trên điện thoại này. Mỗi tháng anh nên tải bản sao lưu rồi gửi vào Zalo hoặc Google Drive của mình. Khi đổi máy, bấm Khôi phục và chọn tệp đó.</p>
+      <div class="chips">
+        <button class="primary" id="backup-save" type="button">Tải bản sao lưu</button>
+        <label class="chip" for="backup-file" id="backup-pick">Khôi phục từ tệp</label>
+        <input type="file" id="backup-file" accept=".json,application/json" hidden>
+      </div>
+      <p class="cue" id="backup-msg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- WEEK -->
+  <section class="section" id="p-week" role="tabpanel" hidden>
+    <h2>4 buổi mỗi tuần · chế độ <span id="week-mode">ở nhà</span></h2>
+    <p class="muted">Đổi chế độ ở tab Tập. Ngày tập: về đến nhà là tập luôn khoảng 1 tiếng, xong đi chợ gần nhà rồi nấu ăn tối. Ngày nghỉ (T4, T6, CN): đi chợ luôn, mua đồ cho 2 ngày để hôm sau tập xong không cần đi chợ.</p>
+    <ul class="plain week" id="weeklist"></ul>
+    <h2>Một buổi khoảng 45–60 phút</h2>
+    <div class="split">
+      <div><span>Khởi động</span><b>5–10′</b><p class="cue">Nhảy tại chỗ, xoay khớp, 1 hiệp nhẹ</p></div>
+      <div><span>Tập chính</span><b>35–45′</b><p class="cue">Nghỉ 60–90 giây giữa hiệp</p></div>
+      <div><span>Cardio</span><b>10′</b><p class="cue">Nhảy dây hoặc leo núi, không bắt buộc</p></div>
+      <div><span>Giãn cơ</span><b>5′</b><p class="cue">Vai, lưng, đùi</p></div>
+    </div>
+    <h2>Quy tắc</h2>
+    <ul class="plain rules">
+      <li><b>4×10</b> nghĩa là 4 hiệp, mỗi hiệp 10 lần.</li>
+      <li>Chọn mức tạ mà 2 lần cuối thấy nặng nhưng vẫn giữ đúng tư thế.</li>
+      <li>Mỗi tuần thêm 1–2 lần hoặc thêm một nấc tạ. Có tăng dần thì cơ mới lớn.</li>
+      <li>Tuần 1–2: làm khoảng 70% sức, tập trung học đúng động tác. Từ tuần 3 mới đẩy đến 1–2 lần cuối thật nặng.</li>
+      <li>Mỗi 6–8 tuần có 1 tuần nhẹ: giữ nguyên bài, giảm một nửa số hiệp để cơ thể hồi phục.</li>
+      <li>Ngày nghỉ vẫn đi bộ <b>8.000–10.000 bước</b>.</li>
+    </ul>
+  </section>
+
+  <!-- GUIDE -->
+  <section class="section" id="p-guide" role="tabpanel" hidden>
+    <h2>Cách làm từng động tác</h2>
+    <p class="muted">Bấm vào tên để xem hướng dẫn. Nút “Xem video” mở YouTube tìm video mẫu.</p>
+    <div id="guidelist" class="section"></div>
+  </section>
+
+  <!-- FOOD -->
+  <section class="section" id="p-food" role="tabpanel" hidden>
+    <h2>Mỗi ngày cần</h2>
+    <table>
+      <tr><td>Calo</td><td>1.900–2.000 kcal</td></tr>
+      <tr><td>Đạm (quan trọng nhất)</td><td>120–135 g</td></tr>
+      <tr><td>Chất béo</td><td>55–65 g</td></tr>
+      <tr><td>Tinh bột</td><td>180–220 g</td></tr>
+      <tr><td>Nước</td><td>2,5–3 lít</td></tr>
+      <tr><td>Ngủ</td><td>7–8 tiếng</td></tr>
+    </table>
+    <h2>Ngày tập (về nhà 19h15, tập trước rồi đi chợ)</h2>
+    <div class="section">
+      <div class="meal"><time>7h00</time> · <b>Sáng</b><p>2 quả trứng + 1 bánh mì, hoặc phở bò ít bánh nhiều thịt. Cà phê ít đường.</p></div>
+      <div class="meal"><time>12h00</time> · <b>Trưa</b><p>1 bát cơm + 150g ức gà, bò hoặc cá + rau thoải mái. Tối hôm trước nấu dư một suất để mang đi.</p></div>
+      <div class="meal"><time>17h30</time> · <b>Ăn nhẹ buổi chiều, trước tập</b><p>Bữa này phải đủ no vì tối ăn muộn: 1 bánh mì + 2 quả trứng luộc, hoặc 1 quả chuối + 1 hộp sữa chua + 1 nắm hạt. Mang sẵn từ nhà.</p></div>
+      <div class="meal"><time>21h15</time> · <b>Tối, sau tập</b><p>Tập xong 20h20 đi chợ hoặc siêu thị gần nhà (tối chợ ít đồ thì mua ở siêu thị). Nấu món nhanh 15 phút: ½–1 bát cơm + 150g thịt nạc, cá hoặc đậu phụ + nhiều rau. Cơm hẹn giờ nồi từ sáng. Ăn xong trước 21h45.</p></div>
+    </div>
+    <h2>Ngày đi chợ (T4, T6, CN)</h2>
+    <div class="section">
+      <div class="meal"><time>19h15</time> · <b>Về đến nhà, đi chợ</b><p>Mua thịt, cá và rau cho hôm nay và ngày mai. Về nhà chia phần 150g, ướp sẵn, rửa rau để tủ lạnh.</p></div>
+      <div class="meal"><time>20h15</time> · <b>Tối</b><p>1 bát cơm + 150g đạm + nhiều rau. Nấu dư một suất mang đi trưa.</p></div>
+    </div>
+    <p class="muted">Ngày đi chợ bỏ bữa 17h30, hoặc thay bằng 1 hộp sữa chua nếu đói.</p>
+    <h2>Món nhanh 15 phút</h2>
+    <ul class="plain rules">
+      <li><b>Bò xào rau</b> (cải, súp lơ, đậu que): xào lửa to, ít dầu.</li>
+      <li><b>Ức gà áp chảo</b>: ướp sẵn từ hôm trước, áp chảo 5–6 phút mỗi mặt.</li>
+      <li><b>Cá hấp hoặc cá kho</b>: cá basa, cá thu, cá hồi.</li>
+      <li><b>Trứng</b>: luộc, chiên ít dầu, hoặc đánh với thịt băm hấp.</li>
+      <li><b>Đậu phụ sốt cà chua</b> + canh rau: rẻ, nhiều đạm.</li>
+      <li>Rau luộc hoặc canh rau ăn kèm mọi bữa.</li>
+    </ul>
+    <h2>Nên và không nên</h2>
+    <ul class="plain rules">
+      <li>✅ Bữa nào cũng có đạm: trứng, thịt nạc, cá, đậu phụ, sữa chua.</li>
+      <li>✅ Rau ăn bao nhiêu cũng được.</li>
+      <li>❌ Trà sữa, nước ngọt, bia, đồ chiên rán. Đây là nguồn mỡ bụng chính.</li>
+      <li>❌ Ăn thêm sau bữa tối sau tập. Đói thì uống nước hoặc 1 hộp sữa chua không đường.</li>
+      <li>Ăn xong đợi khoảng 1,5 tiếng rồi ngủ, trước 23h30, để đủ 7 tiếng.</li>
+      <li>Cân vào sáng sớm, sau khi đi vệ sinh, 1 lần mỗi tuần.</li>
+    </ul>
+  </section>
+</div>
+
+<div id="tip" class="tip" hidden></div>
+<div class="timer" id="timer">
+  <div class="in">
+    <div class="clock" id="clock">0:00</div>
+    <div class="lab" id="tlab">Nghỉ giữa hiệp</div>
+    <button data-sec="60" id="t60">60s</button>
+    <button data-sec="90" id="t90">90s</button>
+    <button data-sec="120" id="t120">2′</button>
+    <button class="stop" id="tstop" hidden>Dừng</button>
+  </div>
+</div>
+
+<script>
+const EX = {
+  pulldown:{n:"Kéo cáp xuống",en:"Lat Pulldown",g:"Lưng",yt:"lat pulldown form",
+    how:["Ngồi vào máy, kẹp đùi dưới đệm.","Nắm thanh rộng hơn vai, lòng bàn tay hướng ra trước.","Kéo thanh xuống ngực trên, rồi thả lên chậm."],
+    tip:"Ưỡn ngực nhẹ, không ngả người ra sau nhiều. Nghĩ là kéo khuỷu tay xuống hông."},
+  pullup:{n:"Kéo xà",en:"Pull-up",g:"Lưng",yt:"pull up form beginner",key:true,
+    how:["Treo người, tay nắm rộng hơn vai.","Kéo người lên đến khi cằm qua xà.","Hạ xuống từ từ."],
+    tip:"Chưa lên được lần nào: nhảy lên rồi hạ người thật chậm 3–5 giây, hoặc dùng dây chun hỗ trợ."},
+  dbrow:{n:"Chèo tạ đơn",en:"Dumbbell Row",g:"Lưng",yt:"dumbbell row form",
+    how:["Một tay và một gối chống lên ghế, lưng thẳng song song sàn.","Tay kia cầm tạ, kéo lên sát hông.","Hạ xuống chậm, đổi bên."],
+    tip:"Kéo về phía hông, không kéo lên vai."},
+  cablerow:{n:"Kéo cáp ngồi",en:"Seated Cable Row",g:"Lưng",yt:"seated cable row form",
+    how:["Ngồi, chân đạp vào bàn đạp, gối hơi chùng.","Kéo tay cầm về bụng.","Duỗi tay ra chậm."],
+    tip:"Lưng thẳng, ép hai bả vai vào nhau khi kéo về."},
+  lateral:{n:"Dang tay ngang",en:"Lateral Raise",g:"Vai",yt:"lateral raise form",key:true,
+    how:["Đứng thẳng, mỗi tay một tạ đơn nhẹ 3–6kg.","Dang hai tay sang ngang đến ngang vai, khuỷu hơi cong.","Hạ xuống chậm."],
+    tip:"Bài quan trọng nhất cho vai rộng. Phải nhún vai hay đung đưa người là tạ đang quá nặng."},
+  press:{n:"Đẩy vai tạ đơn",en:"Shoulder Press",g:"Vai",yt:"dumbbell shoulder press form",
+    how:["Ngồi ghế có tựa lưng, tạ ngang tai.","Đẩy thẳng tạ lên trên đầu.","Hạ về ngang tai."],
+    tip:"Không ưỡn lưng quá mức."},
+  facepull:{n:"Kéo cáp về mặt",en:"Face Pull",g:"Vai",yt:"face pull form",
+    how:["Gắn dây thừng vào máy cáp ngang mặt.","Kéo dây về phía trán, hai tay tách sang hai bên.","Thả về chậm."],
+    tip:"Khuỷu tay giữ cao ngang vai. Bài này tập vai sau và chỉnh dáng gù."},
+  incline:{n:"Đẩy ngực dốc lên",en:"Incline Dumbbell Press",g:"Ngực và tay",yt:"incline dumbbell press form",
+    how:["Nằm ghế dốc khoảng 30°, tạ ở hai bên ngực.","Đẩy tạ lên thẳng trên ngực.","Hạ về chậm."],
+    tip:"Khuỷu tay khép khoảng 45° so với thân, không bè ngang."},
+  pushup:{n:"Hít đất",en:"Push-up",g:"Ngực và tay",yt:"push up form",
+    how:["Chống tay rộng hơn vai một chút, người thẳng từ đầu đến gót.","Hạ ngực gần sát sàn.","Đẩy lên."],
+    tip:"Quá khó thì chống gối xuống sàn."},
+  curl:{n:"Cuốn tạ tay trước",en:"Bicep Curl",g:"Ngực và tay",yt:"dumbbell bicep curl form",
+    how:["Đứng thẳng, cầm tạ, khuỷu sát người.","Cuốn tạ lên vai.","Hạ xuống chậm."],
+    tip:"Khuỷu tay đứng yên, không đung đưa người."},
+  pushdown:{n:"Ép tay sau",en:"Tricep Pushdown",g:"Ngực và tay",yt:"tricep pushdown form",
+    how:["Đứng trước máy cáp, nắm thanh ngang ngực.","Ép thanh xuống đến khi tay duỗi thẳng.","Thả lên chậm."],
+    tip:"Khuỷu kẹp sát hông, chỉ cẳng tay di chuyển."},
+  squat:{n:"Gánh đùi",en:"Squat / Goblet Squat",g:"Chân",yt:"goblet squat form",
+    how:["Đứng chân rộng bằng vai.","Hạ mông như ngồi ghế đến khi đùi song song sàn.","Đứng lên."],
+    tip:"Lưng thẳng, gót không nhấc, gối theo hướng mũi chân. Người mới: ôm tạ đơn trước ngực."},
+  rdl:{n:"Romanian Deadlift",en:"RDL",g:"Chân",yt:"romanian deadlift dumbbell form",
+    how:["Đứng thẳng, cầm tạ trước đùi, gối hơi chùng.","Đẩy mông ra sau, hạ tạ dọc chân đến giữa ống chân.","Đứng lên."],
+    tip:"Lưng luôn thẳng, không còng. Thấy căng mặt sau đùi là đúng."},
+  lunge:{n:"Chùng chân",en:"Lunge",g:"Chân",yt:"dumbbell lunge form",
+    how:["Bước một chân lên trước.","Hạ người đến khi hai gối gập khoảng 90°.","Đẩy về tư thế đứng, đổi chân."],
+    tip:"Thân trên thẳng, gối trước không đổ vào trong."},
+  plank:{n:"Plank",en:"Plank",g:"Bụng",yt:"plank form",
+    how:["Chống hai cẳng tay và mũi chân.","Giữ người thẳng như tấm ván."],
+    tip:"Siết bụng và mông, không võng lưng, không chổng mông."},
+  legraise:{n:"Treo người gập chân",en:"Hanging Knee Raise",g:"Bụng",yt:"hanging knee raise form",
+    how:["Treo người trên xà.","Co hai gối lên ngang bụng.","Hạ xuống chậm, không đung đưa."],
+    tip:"Khó quá thì nằm ngửa trên sàn và nâng chân."},
+  cardio:{n:"Đi bộ dốc / đạp xe",en:"Incline Walk",g:"Cardio",yt:"incline treadmill walk",
+    how:["Máy chạy dốc 8–12%, tốc độ 4,5–5,5 km/h.","Hoặc đạp xe mức vừa."],
+    tip:"Vừa thở hơi gấp vẫn nói chuyện được là đúng mức."},
+  invrow:{n:"Kéo người dưới bàn",en:"Inverted Row",g:"Ở nhà",yt:"inverted row under table",
+    how:["Nằm ngửa dưới một cái bàn chắc chắn, hai tay nắm mép bàn.","Giữ người thẳng, gót chạm sàn.","Kéo ngực lên sát mép bàn, rồi hạ xuống chậm."],
+    tip:"Thử bàn thật chắc trước khi tập. Co gối lại thì dễ hơn, duỗi thẳng chân thì khó hơn. Không có bàn: buộc khăn vào hai tay nắm cửa, đóng cửa lại, ngả người ra sau rồi kéo."},
+  dips:{n:"Chống xà kép",en:"Parallel Bar Dips",g:"Ở nhà",yt:"parallel bar dips form beginner",
+    how:["Chống hai tay lên xà kép, tay thẳng, chân co lên khỏi đất.","Gập khuỷu, hạ người đến khi vai ngang khuỷu tay.","Đẩy người lên đến khi tay thẳng."],
+    tip:"Tập ngực dưới, vai trước và tay sau. Người hơi ngả về trước. Không hạ quá sâu nếu thấy đau vai."},
+  rearfly:{n:"Dang tay cúi người",en:"Dumbbell Reverse Fly",g:"Ở nhà",yt:"dumbbell reverse fly form",
+    how:["Đứng gập hông, thân ngả gần song song sàn, lưng thẳng, mỗi tay một tạ 5kg.","Dang hai tay sang ngang, khuỷu hơi cong, ép hai bả vai.","Hạ xuống chậm."],
+    tip:"Tập vai sau, thay cho Face Pull. Làm chậm, không vung tạ."},
+  bandpd:{n:"Kéo dây chun xuống",en:"Band Lat Pulldown",g:"Ở nhà",yt:"resistance band lat pulldown",
+    how:["Móc dây chun lên xà cửa hoặc khe cửa phía trên.","Quỳ hoặc ngồi, hai tay nắm dây giơ cao.","Kéo khuỷu tay xuống hông, ép lưng, rồi thả lên chậm."],
+    tip:"Dùng thay máy kéo cáp. Kéo bằng lưng, không gập người."},
+  pike:{n:"Hít đất chổng mông",en:"Pike Push-up",g:"Ở nhà",yt:"pike push up form",
+    how:["Chống tay xuống sàn, đẩy mông lên cao thành hình chữ V ngược.","Gập khuỷu, hạ đỉnh đầu về phía sàn.","Đẩy lên."],
+    tip:"Thay cho bài đẩy vai. Kê chân lên ghế thì khó hơn."},
+  bpa:{n:"Kéo giãn dây chun",en:"Band Pull-apart",g:"Ở nhà",yt:"band pull apart form",
+    how:["Cầm dây chun bằng hai tay, duỗi thẳng tay ra trước ngang vai.","Kéo dây dang rộng sang hai bên đến khi chạm ngực.","Thả về chậm."],
+    tip:"Ép hai bả vai vào nhau. Tốt cho vai sau và dáng thẳng."},
+  bandfp:{n:"Kéo dây chun về mặt",en:"Band Face Pull",g:"Ở nhà",yt:"band face pull",
+    how:["Móc dây chun vào tay nắm cửa ngang mặt.","Kéo dây về phía trán, hai tay tách sang hai bên.","Thả về chậm."],
+    tip:"Khuỷu tay giữ cao ngang vai, giống bài Face Pull ở gym."},
+  bagrow:{n:"Chèo balo / tạ đơn",en:"Backpack Row",g:"Ở nhà",yt:"one arm dumbbell row at home",
+    how:["Một tay chống lên ghế hoặc giường, lưng thẳng.","Tay kia xách balo nặng hoặc tạ đơn.","Kéo lên sát hông, hạ xuống chậm, đổi bên."],
+    tip:"Balo bỏ sách hoặc chai nước để tăng nặng."},
+  bulgarian:{n:"Chùng chân kê ghế",en:"Bulgarian Split Squat",g:"Ở nhà",yt:"bulgarian split squat form",
+    how:["Đứng quay lưng về ghế, gác mu bàn chân sau lên ghế.","Hạ người đến khi đùi trước song song sàn.","Đẩy lên bằng chân trước, làm xong thì đổi chân."],
+    tip:"Bài chân tốt nhất khi không có tạ nặng. Có thể cầm thêm balo hoặc tạ đơn."},
+  slrdl:{n:"Gập hông một chân",en:"Single-leg RDL",g:"Ở nhà",yt:"single leg rdl form",
+    how:["Đứng một chân, tay cầm balo hoặc tạ đơn.","Đẩy mông ra sau, chân kia duỗi về sau, thân ngả về trước.","Đứng lên, làm xong thì đổi chân."],
+    tip:"Lưng thẳng. Mất thăng bằng thì chạm nhẹ một tay vào tường."},
+  bridge:{n:"Nâng hông",en:"Glute Bridge",g:"Ở nhà",yt:"glute bridge form",
+    how:["Nằm ngửa, co gối, bàn chân đặt sát mông.","Đẩy hông lên đến khi người thẳng từ gối đến vai.","Giữ 1 giây, hạ xuống."],
+    tip:"Siết mông ở điểm cao nhất. Đặt balo lên hông để tăng nặng."},
+  lyingleg:{n:"Nằm nâng chân",en:"Lying Leg Raise",g:"Ở nhà",yt:"lying leg raise form",
+    how:["Nằm ngửa, hai tay đặt dưới mông.","Nâng hai chân thẳng lên đến khi vuông góc với sàn.","Hạ xuống chậm, không chạm sàn."],
+    tip:"Ép lưng dưới xuống sàn suốt bài. Khó quá thì co gối."},
+  diamond:{n:"Hít đất tay hẹp",en:"Diamond Push-up",g:"Ở nhà",yt:"diamond push up form",
+    how:["Chống hai tay sát nhau dưới ngực, ngón cái và ngón trỏ tạo hình thoi.","Hạ ngực xuống gần tay.","Đẩy lên."],
+    tip:"Tập bắp tay sau. Khó quá thì chống gối."},
+  bandcurl:{n:"Cuốn dây chun / tạ",en:"Band Curl",g:"Ở nhà",yt:"resistance band bicep curl",
+    how:["Đứng lên giữa dây chun, hai tay cầm hai đầu dây.","Khuỷu sát người, cuốn tay lên vai.","Hạ xuống chậm."],
+    tip:"Có tạ đơn thì làm như bài cuốn tạ ở gym."},
+  jumpsq:{n:"Bật nhảy squat",en:"Jump Squat",g:"Ở nhà",yt:"jump squat form",
+    how:["Hạ người như squat.","Bật nhảy thẳng lên.","Tiếp đất nhẹ bằng mũi chân rồi hạ ngay vào lần tiếp theo."],
+    tip:"Tiếp đất êm, gối không đổ vào trong. Ở chung cư có thể đổi thành squat nhanh không nhảy."},
+  climber:{n:"Leo núi",en:"Mountain Climber",g:"Ở nhà",yt:"mountain climber form",
+    how:["Chống tay như hít đất.","Lần lượt kéo từng gối lên ngực thật nhanh."],
+    tip:"Giữ hông thấp, không chổng mông."},
+  walkh:{n:"Đi bộ nhanh / nhảy dây",en:"Brisk Walk / Jump Rope",g:"Ở nhà",yt:"jump rope for beginners",
+    how:["Đi bộ nhanh ngoài trời 30 phút.","Hoặc nhảy dây: 1 phút nhảy, 30 giây nghỉ, lặp 10–15 lần."],
+    tip:"Vừa thở hơi gấp vẫn nói chuyện được là đúng mức."}
+};
+
+const W = {
+  A:{t:"Thân trên A (gym)",s:"Lưng và vai",list:[["pulldown",4,"8–12","Hoặc kéo xà nếu làm được"],["dbrow",4,"10"],["press",3,"10"],["lateral",4,"15"],["curl",3,"12"]]},
+  L:{t:"Thân dưới + bụng (gym)",s:"Chân, mông, bụng",list:[["lateral",3,"15","Thêm cho vai rộng"],["squat",4,"8–10"],["rdl",3,"10"],["lunge",3,"12","Mỗi chân"],["plank",3,"45s"],["legraise",3,"12"]]},
+  B:{t:"Thân trên B (gym)",s:"Ngực, vai, lưng",list:[["incline",4,"10"],["cablerow",3,"12"],["lateral",4,"15"],["facepull",3,"15"],["pushdown",3,"12"]]},
+  F:{t:"Toàn thân + cardio (gym)",s:"Nhẹ, đốt mỡ",list:[["pullup",3,"tối đa","Kéo đến khi không lên được nữa"],["pushup",3,"tối đa"],["lateral",3,"15"],["cardio",1,"20–30′"]]}
+};
+const H = {
+  A:{t:"Lưng và vai (ở nhà)",s:"Tạ 5kg, 7kg và cái bàn",list:[["invrow",4,"10–12","Hôm nào ra công viên thì thay bằng kéo xà đơn"],["dbrow",4,"15–20","Tạ 7kg, mỗi tay, hạ chậm 3 giây"],["press",3,"12–15","Tạ 7kg, ngồi ghế hoặc đứng"],["lateral",4,"15–20","Tạ 5kg"],["rearfly",3,"15–20","Tạ 5kg"]]},
+  L:{t:"Chân + bụng (ở nhà)",s:"Tạ 5kg, 7kg và ghế",list:[["lateral",3,"15–20","Tạ 5kg, thêm cho vai rộng"],["bulgarian",3,"12","Mỗi chân, cầm cả 2 tạ"],["squat",4,"20","Ôm tạ 7kg trước ngực, hạ chậm 3 giây"],["slrdl",3,"12","Mỗi chân, tạ 7kg"],["bridge",3,"12","Một chân, mỗi bên"],["plank",3,"45s"],["lyingleg",3,"12–15"]]},
+  B:{t:"Ngực, vai, tay (ở nhà)",s:"Sàn và tạ 5kg, 7kg",list:[["pushup",4,"tối đa"],["dbrow",4,"15–20","Tạ 7kg, mỗi tay"],["lateral",4,"15–20","Tạ 5kg"],["rearfly",3,"15–20","Tạ 5kg"],["diamond",3,"tối đa"],["curl",3,"12–15","Tạ 7kg, hạ chậm 3 giây"]]},
+  F:{t:"Toàn thân + đốt mỡ (ở nhà)",s:"Làm vòng tròn, nghỉ 1 phút mỗi vòng",list:[["invrow",3,"tối đa"],["pushup",3,"tối đa"],["lateral",3,"15–20","Tạ 5kg"],["jumpsq",3,"15"],["climber",3,"30s"],["walkh",1,"20–30′"]]}
+};
+const P = {
+  A:{t:"Lưng và vai (công viên)",s:"Xà đơn, xà thấp",list:[["pullup",5,"tối đa","Chưa lên được thì nhảy lên, hạ chậm 5 giây"],["invrow",3,"10–15","Dùng xà thấp ngang hông"],["pike",3,"8–10","Chống tay trên ghế đá cho khó hơn"],["lateral",4,"15–20","Mang tạ 5kg ra công viên"],["legraise",3,"10–12","Treo trên xà đơn"]]},
+  L:{t:"Chân + bụng (công viên)",s:"Ghế đá, bãi cỏ",list:[["bulgarian",3,"12","Mỗi chân, gác chân lên ghế đá"],["jumpsq",4,"15"],["lunge",3,"12","Mỗi chân, đi bộ chùng chân"],["plank",3,"45s"],["legraise",3,"10–12","Treo trên xà đơn"],["walkh",1,"10′","Chạy chậm quanh công viên"]]},
+  B:{t:"Ngực, vai, tay (công viên)",s:"Xà kép, xà đơn",list:[["dips",4,"tối đa","Chưa lên được thì chống xà kép giữ 20 giây"],["pushup",3,"tối đa"],["pullup",3,"tối đa","Nắm ngửa tay để tập thêm bắp tay trước"],["lateral",4,"15–20","Mang tạ 5kg ra công viên"],["diamond",3,"tối đa"],["climber",3,"30s"]]},
+  F:{t:"Toàn thân (công viên)",s:"Xà đơn, xà kép, rồi chạy bộ",list:[["pullup",4,"tối đa"],["dips",4,"tối đa"],["legraise",3,"10–12","Treo trên xà đơn"],["pushup",3,"tối đa"],["lateral",3,"15–20","Mang tạ 5kg ra công viên"],["walkh",1,"20′","Chạy chậm hoặc đi bộ nhanh quanh công viên"]]}
+};
+const PLAN = {home:H, park:P, gym:W};
+const MODE_NAME = {home:"ở nhà", park:"công viên", gym:"phòng gym"};
+// index 0 = Monday
+const DAYS = [["T2","A"],["T3","L"],["T4",null],["T5","B"],["T6",null],["T7","F"],["CN",null]];
+const FULL = ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ nhật"];
+
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+function localKey(d){const z=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())}
+function keyToDate(k){const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)}
+function fmtDate(k){const d=keyToDate(k);return FULL[(d.getDay()+6)%7]+", "+String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")}
+function shortDate(k){const d=keyToDate(k);return d.getDate()+"/"+(d.getMonth()+1)}
+function weekStart(k){const d=keyToDate(k);d.setDate(d.getDate()-((d.getDay()+6)%7));return localKey(d)}
+const todayIdx = (new Date().getDay()+6)%7;
+const todayKey = localKey(new Date());
+let selDay = todayIdx;
+let mode = store.get("mode","home");
+if(!PLAN[mode]) mode="home";
+
+/* ---- journal store: local copy always, synced to db when available ---- */
+let logs = store.get("logs",{});
+let col = null;
+const timers={}, chains={}, known=new Set();
+function setStatus(t){const el=document.getElementById("save-status");if(el)el.textContent=t}
+function saveDoc(id){
+  store.set("logs",logs);
+  if(!col){setStatus("Đã lưu trên máy này");return}
+  clearTimeout(timers[id]);
+  setStatus("Đang lưu…");
+  timers[id]=setTimeout(()=>{
+    delete timers[id];
+    const body=logs[id];
+    chains[id]=(chains[id]||Promise.resolve())
+      .then(()=>body?col.doc(id).set(JSON.parse(JSON.stringify(body))):col.doc(id).delete())
+      .then(()=>setStatus("Đã lưu vào nhật ký"),
+            e=>setStatus(e&&e.code==="quota_exceeded"?"Nhật ký đã đầy, hãy xoá bớt buổi cũ":"Chưa lưu lên mạng được, vẫn lưu trên máy này"));
+  },700);
+}
+function removeDoc(id){delete logs[id];saveDoc(id)}
+
+
+
+function wid(wk){return "w_"+todayKey+"_"+mode+"_"+wk}
+function blank(wk){return {type:"workout",date:todayKey,mode,wk,sets:{},reps:{},kg:{},feel:"",note:""}}
+function hasData(L){return Object.values(L.sets||{}).some(a=>a.some(Boolean))||Object.values(L.reps||{}).some(Boolean)||Object.values(L.kg||{}).some(Boolean)||!!L.feel||!!(L.note||"").trim()}
+function maxNum(s){const m=String(s||"").match(/\d+(?:[.,]\d+)?/g);return m?Math.max(...m.map(x=>parseFloat(x.replace(",",".")))):0}
+function summarize(L){
+  const w=PLAN[L.mode][L.wk];
+  L.title=w.t;
+  L.ex=w.list.map(([id,sets],ei)=>({id,n:EX[id].n,total:sets,done:(L.sets["e"+ei]||[]).filter(Boolean).length,reps:L.reps["e"+ei]||"",kg:L.kg["e"+ei]||"",best:maxNum(L.reps["e"+ei])}));
+  L.done=L.ex.reduce((a,x)=>a+x.done,0);L.total=L.ex.reduce((a,x)=>a+x.total,0);
+  L.updatedAt=Date.now();
+}
+function commit(wk){
+  const id=wid(wk),L=logs[id];
+  if(!L) return;
+  if(!hasData(L)) removeDoc(id); else {summarize(L);saveDoc(id)}
+}
+function ensure(wk){const id=wid(wk);if(!logs[id])logs[id]=blank(wk);return logs[id]}
+
+function renderModes(){
+  document.querySelectorAll("#modes button").forEach(b=>{
+    b.setAttribute("aria-checked",b.dataset.m===mode);
+    b.onclick=()=>{mode=b.dataset.m;store.set("mode",mode);renderAll()};
+  });
+  document.getElementById("extra-home").hidden=mode!=="home";
+  document.getElementById("extra-park").hidden=mode!=="park";
+  document.getElementById("extra-gym").hidden=mode!=="gym";
+}
+function renderAll(){renderModes();renderDays();renderSession();renderWeek()}
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function yt(q){return "https://www.youtube.com/results?search_query="+encodeURIComponent(q)}
+
+function renderDays(){
+  const el=document.getElementById("days");
+  el.innerHTML=DAYS.map(([d,w],i)=>`<button id="day-${i}" class="${w?"train":""}" aria-pressed="${i===selDay}" data-i="${i}">${d}<i>${i===todayIdx?"hôm nay":(w?"tập":"nghỉ")}</i></button>`).join("");
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{selDay=+b.dataset.i;renderDays();renderSession()});
+}
+
+const FEELS=["Nhẹ","Vừa","Nặng","Quá sức"];
+function renderSession(){
+  const el=document.getElementById("session");
+  const day=selDay, wk=DAYS[day][1];
+  if(!wk){
+    el.innerHTML=`<div class="rest"><b>${FULL[day]}: nghỉ</b><p class="muted">Đi bộ 8.000–10.000 bước, ăn đủ đạm, ngủ sớm.<br>Cơ lớn lên trong lúc nghỉ.</p></div>`;
+    return;
+  }
+  const w=PLAN[mode][wk];
+  const L=logs[wid(wk)]||blank(wk);
+  const total=w.list.reduce((a,x)=>a+x[1],0);
+  const countDone=()=>Object.values(L.sets).reduce((a,s)=>a+s.filter(Boolean).length,0);
+  el.innerHTML=`
+    <div class="session-head"><h2>${FULL[day]} · ${w.t}</h2><span class="progress" id="prog">${countDone()}/${total} hiệp</span></div>
+    <p class="muted" style="margin-top:-6px">${w.s}. Bấm ô số sau mỗi hiệp, ghi số lần và mức tạ. Đồng hồ nghỉ ${mode==="gym"?90:60} giây tự chạy.</p>
+    ${day!==todayIdx?`<p class="cue banner">Đang xem lịch ${FULL[day]}. Những gì anh ghi sẽ lưu vào nhật ký hôm nay (${fmtDate(todayKey)}).</p>`:""}
+    ${w.list.map(([id,sets,reps,note],ei)=>{const e=EX[id];const st=L.sets["e"+ei]||[];return `
+      <article class="ex${e.key?" key":""}">
+        <div class="ex-top">
+          <div><div class="ex-name">${esc(e.n)}</div><div class="ex-en">${esc(e.en)}</div>${e.key?'<span class="tag">Quan trọng cho dáng chữ V</span>':""}</div>
+          <div class="dose">${sets>1?sets+"×":""}${esc(reps)}</div>
+        </div>
+        <div class="sets">${Array.from({length:sets},(_,s)=>`<button class="set${st[s]?" on":""}" id="set-${mode}-${wk}-${ei}-${s}" data-e="${ei}" data-s="${s}" data-n="${sets}" aria-pressed="${!!st[s]}" aria-label="${esc(e.n)} hiệp ${s+1}">${s+1}</button>`).join("")}</div>
+        <div class="logrow">
+          <label for="reps-${mode}-${wk}-${ei}">Số lần đã làm<input id="reps-${mode}-${wk}-${ei}" data-e="${ei}" data-f="reps" placeholder="vd: 12, 10, 9" value="${esc(L.reps["e"+ei]||"")}" autocomplete="off"></label>
+          <label for="kg-${mode}-${wk}-${ei}">Tạ (kg)<input id="kg-${mode}-${wk}-${ei}" data-e="${ei}" data-f="kg" inputmode="decimal" placeholder="—" value="${esc(L.kg["e"+ei]||"")}" autocomplete="off"></label>
+        </div>
+        <p class="cue">${note?`<b>${esc(note)}.</b> `:""}${esc(e.tip)}</p>
+        <a class="link" href="${yt(e.yt)}" target="_blank" rel="noopener">Xem video mẫu ↗</a>
+      </article>`}).join("")}
+    <article class="ex">
+      <h3>Buổi hôm nay thế nào?</h3>
+      <div class="chips">${FEELS.map((f,i)=>`<button class="chip" id="feel-${i}" data-feel="${f}" aria-pressed="${L.feel===f}">${f}</button>`).join("")}</div>
+      <label for="note-${mode}-${wk}" class="muted">Ghi chú</label>
+      <textarea id="note-${mode}-${wk}" rows="3" placeholder="vd: tăng tạ chèo lên 7kg, hơi mỏi vai, ngủ ít">${esc(L.note||"")}</textarea>
+      <p class="cue" id="save-status">${col?"Tự lưu trên điện thoại khi anh ghi.":"Tự lưu trên máy này khi anh ghi."}</p>
+    </article>
+    <button class="reset" id="reset">Xoá ghi chép buổi này</button>`;
+  el.querySelectorAll(".set").forEach(b=>b.onclick=()=>{
+    const Lx=ensure(wk),k="e"+b.dataset.e,n=+b.dataset.n,s=+b.dataset.s;
+    const arr=(Lx.sets[k]||[]).slice();while(arr.length<n)arr.push(false);
+    arr[s]=!arr[s];Lx.sets[k]=arr;
+    b.classList.toggle("on",arr[s]);b.setAttribute("aria-pressed",arr[s]);
+    document.getElementById("prog").textContent=Object.values(Lx.sets).reduce((a,x)=>a+x.filter(Boolean).length,0)+"/"+total+" hiệp";
+    commit(wk);
+    if(arr[s]) startTimer(mode==="gym"?90:60);
+  });
+  el.querySelectorAll(".logrow input").forEach(inp=>inp.oninput=()=>{
+    const Lx=ensure(wk);Lx[inp.dataset.f]["e"+inp.dataset.e]=inp.value.trim();commit(wk);
+  });
+  const ta=el.querySelector("textarea");
+  ta.oninput=()=>{ensure(wk).note=ta.value;commit(wk)};
+  el.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    const Lx=ensure(wk);Lx.feel=Lx.feel===c.dataset.feel?"":c.dataset.feel;
+    el.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x.dataset.feel===Lx.feel));
+    commit(wk);
+  });
+  const rs=document.getElementById("reset");
+  rs.onclick=()=>{
+    if(rs.dataset.armed){removeDoc(wid(wk));renderSession();renderLog();return}
+    rs.dataset.armed="1";rs.textContent="Bấm lần nữa để xoá";
+    setTimeout(()=>{if(rs.isConnected){delete rs.dataset.armed;rs.textContent="Xoá ghi chép buổi này"}},4000);
+  };
+}
+
+/* ---- journal tab ---- */
+const MODE_ICON={home:"🏠 Ở nhà",park:"🌳 Công viên",gym:"🏋️ Gym"};
+function workouts(){return Object.entries(logs).filter(([id,L])=>L&&L.type==="workout"&&hasData(L)).map(([id,L])=>Object.assign({id},L)).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:(b.updatedAt||0)-(a.updatedAt||0))}
+function bodies(){return Object.values(logs).filter(L=>L&&L.type==="body").sort((a,b)=>a.date<b.date?-1:1)}
+function fmtNum(n){return String(Math.round(n*10)/10).replace(".",",")}
+
+function niceRange(lo,hi){if(lo===hi){lo-=1;hi+=1}const pad=(hi-lo)*0.15;lo-=pad;hi+=pad;const step=Math.pow(10,Math.floor(Math.log10((hi-lo)/3)));const s=[1,2,2.5,5,10].map(m=>m*step).find(v=>(hi-lo)/v<=4);return {lo:Math.floor(lo/s)*s,hi:Math.ceil(hi/s)*s,step:s}}
+function lineChart(pts,unit){
+  if(pts.length<2) return `<p class="cue empty">Cần ít nhất 2 lần ghi để vẽ đường. ${pts.length?`Hiện có: ${fmtNum(pts[0].y)} ${unit} (${shortDate(pts[0].x)}).`:""}</p>`;
+  const W=340,H=150,L=34,R=40,T=12,B=24;
+  const xs=pts.map(p=>keyToDate(p.x).getTime()),x0=Math.min(...xs),x1=Math.max(...xs);
+  const r=niceRange(Math.min(...pts.map(p=>p.y)),Math.max(...pts.map(p=>p.y)));
+  const X=t=>L+(x1===x0?0.5:(t-x0)/(x1-x0))*(W-L-R), Y=v=>T+(1-(v-r.lo)/(r.hi-r.lo))*(H-T-B);
+  let grid="";for(let v=r.lo;v<=r.hi+1e-9;v+=r.step)grid+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" class="g"/><text x="${L-6}" y="${Y(v)+4}" class="ax" text-anchor="end">${fmtNum(v)}</text>`;
+  const d=pts.map((p,i)=>(i?"L":"M")+X(xs[i]).toFixed(1)+" "+Y(p.y).toFixed(1)).join(" ");
+  const last=pts[pts.length-1];
+  const dots=pts.map((p,i)=>`<circle cx="${X(xs[i])}" cy="${Y(p.y)}" r="4" class="dot"/><circle cx="${X(xs[i])}" cy="${Y(p.y)}" r="13" class="hit" data-tip="${shortDate(p.x)}: ${fmtNum(p.y)} ${unit}"/>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Biểu đồ đường, ${pts.length} lần ghi">${grid}
+    <text x="${L}" y="${H-6}" class="ax">${shortDate(pts[0].x)}</text><text x="${W-R}" y="${H-6}" class="ax" text-anchor="end">${shortDate(last.x)}</text>
+    <path d="${d}" class="ln"/>${dots}
+    <text x="${X(xs[xs.length-1])+8}" y="${Y(last.y)+4}" class="val">${fmtNum(last.y)}</text></svg>`;
+}
+function barChart(weeks){
+  const W=340,H=150,L=22,R=8,T=12,B=24,max=Math.max(5,...weeks.map(w=>w.n));
+  const bw=(W-L-R)/weeks.length, Y=v=>T+(1-v/max)*(H-T-B), base=Y(0);
+  let grid="";for(let v=0;v<=max;v+=max>6?2:1)grid+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" class="g"/><text x="${L-5}" y="${Y(v)+4}" class="ax" text-anchor="end">${v}</text>`;
+  const bars=weeks.map((w,i)=>{const x=L+i*bw+2,wd=bw-4,y=Y(w.n),r=Math.min(4,(base-y)/2,wd/2);
+    const p=w.n?`<path d="M${x} ${base}V${y+r}Q${x} ${y} ${x+r} ${y}H${x+wd-r}Q${x+wd} ${y} ${x+wd} ${y+r}V${base}Z" class="${w.n>=4?"bar ok":"bar"}"/>`:"";
+    return p+`<rect x="${x}" y="${T}" width="${wd}" height="${base-T}" class="hit" data-tip="Tuần ${shortDate(w.k)}: ${w.n} buổi"/>`+`<text x="${x+wd/2}" y="${H-6}" class="ax" text-anchor="middle">${shortDate(w.k)}</text>`}).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Số buổi tập mỗi tuần, 8 tuần gần nhất">${grid}
+    <line x1="${L}" x2="${W-R}" y1="${Y(4)}" y2="${Y(4)}" class="goal"/><text x="${W-R}" y="${Y(4)-4}" class="ax" text-anchor="end">mục tiêu 4</text>${bars}</svg>`;
+}
+function bestSeries(exId){
+  const m={};workouts().forEach(L=>(L.ex||[]).forEach(x=>{if(x.id===exId&&x.best>0)m[L.date]=Math.max(m[L.date]||0,x.best)}));
+  return Object.keys(m).sort().map(k=>({x:k,y:m[k]}));
+}
+function renderLog(){
+  const box=document.getElementById("logbody"); if(!box) return;
+  const ws=workouts(), bs=bodies();
+  const dates=[...new Set(ws.filter(w=>w.done>0).map(w=>w.date))];
+  const thisWeek=weekStart(todayKey);
+  const weekCount=dates.filter(d=>weekStart(d)===thisWeek).length;
+  const sets=ws.reduce((a,w)=>a+(w.done||0),0);
+  const weeks=[];for(let i=7;i>=0;i--){const d=keyToDate(thisWeek);d.setDate(d.getDate()-7*i);const k=localKey(d);weeks.push({k,n:dates.filter(x=>weekStart(x)===k).length})}
+  const kg=bs.filter(b=>b.kg).map(b=>({x:b.date,y:b.kg})), waist=bs.filter(b=>b.waist).map(b=>({x:b.date,y:b.waist}));
+  const lastKg=kg.length?kg[kg.length-1].y:null, diffKg=kg.length>1?lastKg-kg[0].y:null;
+  const lastW=waist.length?waist[waist.length-1].y:null, diffW=waist.length>1?lastW-waist[0].y:null;
+  box.innerHTML=`
+    <div class="tiles">
+      <div><span>Tuần này</span><b>${weekCount}<small>/4 buổi</small></b></div>
+      <div><span>Tổng số buổi</span><b>${dates.length}</b></div>
+      <div><span>Cân nặng</span><b>${lastKg!=null?fmtNum(lastKg)+"<small> kg</small>":"—"}</b>${diffKg!=null?`<em>${diffKg<=0?"↓ "+fmtNum(-diffKg):"↑ "+fmtNum(diffKg)} kg từ lần đầu</em>`:""}</div>
+      <div><span>Vòng eo</span><b>${lastW!=null?fmtNum(lastW)+"<small> cm</small>":"—"}</b>${diffW!=null?`<em>${diffW<=0?"↓ "+fmtNum(-diffW):"↑ "+fmtNum(diffW)} cm từ lần đầu</em>`:""}</div>
+    </div>
+    <p class="cue">Tổng cộng ${sets} hiệp đã tập.</p>
+    <h2>Số buổi mỗi tuần</h2>${barChart(weeks)}
+    <h2>Cân nặng (kg)</h2>${lineChart(kg,"kg")}
+    <h2>Vòng eo (cm)</h2>${lineChart(waist,"cm")}
+    <h2>Kéo xà: số lần cao nhất</h2>${lineChart(bestSeries("pullup"),"lần")}
+    <h2>Hít đất: số lần cao nhất</h2>${lineChart(bestSeries("pushup"),"lần")}
+    <h2>Các buổi đã tập</h2>
+    ${ws.length?ws.slice(0,40).map(L=>`
+      <article class="hist">
+        <div class="hist-top"><b>${fmtDate(L.date)}</b><span class="muted">${MODE_ICON[L.mode]||""}</span></div>
+        <div>${esc(L.title||"")} · <b>${L.done||0}/${L.total||0} hiệp</b>${L.feel?` · cảm nhận: ${esc(L.feel)}`:""}</div>
+        <ul class="plain hist-ex">${(L.ex||[]).filter(x=>x.done||x.reps||x.kg).map(x=>`<li><span>${esc(x.n)}</span><span class="muted">${x.done}/${x.total} hiệp${x.reps?" · "+esc(x.reps)+" lần":""}${x.kg?" · "+esc(x.kg)+" kg":""}</span></li>`).join("")}</ul>
+        ${L.note?`<p class="cue">📝 ${esc(L.note)}</p>`:""}
+        <button class="reset" id="del-${L.id}" data-del="${L.id}">Xoá buổi này</button>
+      </article>`).join(""):`<div class="rest"><b>Chưa có buổi nào</b><p class="muted">Vào tab Tập, bấm ô số sau mỗi hiệp. Buổi tập sẽ tự hiện ở đây.</p></div>`}`;
+  box.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
+    if(b.dataset.armed){removeDoc(b.dataset.del);renderLog();renderSession();return}
+    b.dataset.armed="1";b.textContent="Bấm lần nữa để xoá";
+  });
+}
+function initBodyForm(){
+  const b=logs["b_"+todayKey];
+  if(b){document.getElementById("body-kg").value=b.kg?fmtNum(b.kg):"";document.getElementById("body-waist").value=b.waist?fmtNum(b.waist):""}
+  document.getElementById("body-form").onsubmit=e=>{
+    e.preventDefault();
+    const n=v=>{const x=parseFloat(String(v).replace(",","."));return isFinite(x)?x:null};
+    const kg=n(document.getElementById("body-kg").value), waist=n(document.getElementById("body-waist").value);
+    const msg=document.getElementById("body-msg");
+    if(kg==null&&waist==null){msg.textContent="Nhập cân nặng hoặc vòng eo trước khi lưu.";return}
+    if((kg!=null&&(kg<30||kg>200))||(waist!=null&&(waist<40||waist>160))){msg.textContent="Số đo chưa hợp lý. Cân nặng 30–200 kg, vòng eo 40–160 cm.";return}
+    const id="b_"+todayKey, old=logs[id]||{};
+    logs[id]={type:"body",date:todayKey,kg:kg!=null?kg:(old.kg||null),waist:waist!=null?waist:(old.waist||null),updatedAt:Date.now()};
+    saveDoc(id);renderLog();msg.textContent="Đã lưu số đo hôm nay ("+fmtDate(todayKey)+").";
+  };
+}
+
+/* tooltip for chart marks */
+const tip=document.getElementById("tip");
+function showTip(t,x,y){tip.textContent=t;tip.hidden=false;const w=tip.offsetWidth;tip.style.left=Math.max(8,Math.min(innerWidth-w-8,x-w/2))+"px";tip.style.top=(y-40)+"px"}
+document.addEventListener("pointerover",e=>{const t=e.target.closest&&e.target.closest("[data-tip]");if(t)showTip(t.dataset.tip,e.clientX,e.clientY)});
+document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest("[data-tip]");if(t)showTip(t.dataset.tip,e.clientX,e.clientY);else tip.hidden=true});
+document.addEventListener("pointerout",e=>{if(e.target.closest&&e.target.closest("[data-tip]")&&e.pointerType==="mouse")tip.hidden=true});
+
+function renderWeek(){
+  document.getElementById("week-mode").textContent=MODE_NAME[mode];
+  document.getElementById("weeklist").innerHTML=DAYS.map(([d,w],i)=>w
+    ?`<li><span class="d">${d}</span><div><div class="t">${PLAN[mode][w].t}</div><div class="s">${PLAN[mode][w].list.map(x=>EX[x[0]].n).join(", ")}</div></div></li>`
+    :`<li class="off"><span class="d muted">${d}</span><div><div class="t muted">Nghỉ tập · đi chợ</div><div class="s">Mua đồ cho 2 ngày, ướp thịt và rửa rau sẵn. Đi bộ 8.000–10.000 bước.</div></div></li>`).join("");
+}
+
+function renderGuide(){
+  const groups={};
+  Object.entries(EX).forEach(([id,e])=>(groups[e.g]=groups[e.g]||[]).push(e));
+  document.getElementById("guidelist").innerHTML=Object.entries(groups).map(([g,list])=>
+    `<div class="group-label">${g}</div>`+list.map(e=>`
+    <details><summary><span>${esc(e.n)} <span class="ex-en">· ${esc(e.en)}</span></span></summary>
+      <div class="body"><ol>${e.how.map(h=>`<li>${esc(h)}</li>`).join("")}</ol>
+      <p class="cue"><b>Mẹo:</b> ${esc(e.tip)}</p>
+      <a class="link" href="${yt(e.yt)}" target="_blank" rel="noopener">Xem video mẫu ↗</a></div>
+    </details>`).join("")).join("");
+}
+
+/* tabs */
+function showTab(t){
+  document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
+  ["home","log","week","guide","food"].forEach(x=>document.getElementById("p-"+x).hidden=x!==t);
+  store.set("tab2",t);
+  if(t==="log") renderLog();
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{showTab(b.dataset.tab);window.scrollTo(0,0)});
+
+/* rest timer */
+let tEnd=0,tInt=null;
+const clock=document.getElementById("clock"),timer=document.getElementById("timer"),tstop=document.getElementById("tstop"),tlab=document.getElementById("tlab");
+function fmt(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function tick(){
+  const left=Math.max(0,Math.ceil((tEnd-Date.now())/1000));
+  clock.textContent=fmt(left);
+  if(left===0){stopTimer();timer.classList.add("ring");tlab.textContent="Hết giờ, vào hiệp tiếp!";try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+}
+function startTimer(sec){
+  timer.classList.remove("ring");tlab.textContent="Đang nghỉ";
+  tEnd=Date.now()+sec*1000;clearInterval(tInt);tInt=setInterval(tick,250);tick();tstop.hidden=false;
+}
+function stopTimer(){clearInterval(tInt);tInt=null;tstop.hidden=true}
+document.querySelectorAll(".timer [data-sec]").forEach(b=>b.onclick=()=>startTimer(+b.dataset.sec));
+tstop.onclick=()=>{stopTimer();clock.textContent="0:00";tlab.textContent="Nghỉ giữa hiệp";timer.classList.remove("ring")};
+
+renderAll();renderGuide();initBodyForm();renderLog();
+/* backup */
+document.getElementById("backup-save").onclick=()=>{
+  const blob=new Blob([JSON.stringify({app:"so-tay-chu-v",version:1,savedAt:new Date().toISOString(),logs},null,1)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),link=document.createElement("a");
+  link.href=url;link.download="so-tay-chu-v-"+todayKey+".json";document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  document.getElementById("backup-msg").textContent="Đã tạo tệp sao lưu. Gửi tệp này vào Zalo hoặc Drive để giữ an toàn.";
+};
+document.getElementById("backup-file").onchange=e=>{
+  const f=e.target.files[0],msg=document.getElementById("backup-msg");if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const data=JSON.parse(r.result);
+    if(!data||data.app!=="so-tay-chu-v"||typeof data.logs!=="object") throw 0;
+    let n=0;Object.entries(data.logs).forEach(([id,L])=>{const cur=logs[id];if(!cur||(L.updatedAt||0)>(cur.updatedAt||0)){logs[id]=L;n++}});
+    store.set("logs",logs);renderLog();renderSession();initBodyForm();
+    msg.textContent="Đã khôi phục "+n+" mục từ bản sao lưu.";
+  }catch(err){msg.textContent="Tệp này không phải bản sao lưu của Sổ tay chữ V. Hãy chọn tệp .json đã tải trước đó."}
+  e.target.value="";};
+  r.readAsText(f);
+};
+/* keep data from being cleared, and work offline */
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+const savedTab=store.get("tab2","home");
+showTab(["home","log","week","guide","food"].includes(savedTab)?savedTab:"home");
+</script>
+</body>
+</html>
