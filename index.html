@@ -59,7 +59,7 @@ p{margin:0}
 .section{display:flex;flex-direction:column;gap:10px}
 
 /* mode switch */
-.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .seg button{font:700 14px var(--body);text-align:left;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
 .seg small{font-size:11px;font-weight:500;color:var(--muted)}
 .seg button[aria-checked="true"]{border-color:var(--accent);background:var(--soft)}
@@ -89,6 +89,35 @@ p{margin:0}
 .cue{font-size:13px;color:var(--muted)}
 .cue b{color:var(--ink);font-weight:600}
 .link{font-size:13px;color:var(--accent);font-weight:600;text-decoration:none}
+.seg.two{grid-template-columns:1fr 1fr}
+.seg.two button{text-align:center;align-items:center}
+.icon{width:38px;height:38px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);font:700 16px var(--body);cursor:pointer;flex:none}
+.icon:disabled{opacity:.35;cursor:default}
+.icon.del{color:#e03131;border-color:color-mix(in srgb,#e03131 40%,var(--line))}
+.ed-ctl{display:flex;gap:4px}
+.add{border:1.5px dashed var(--line);background:transparent;color:var(--accent);font:700 15px var(--body);border-radius:12px;padding:14px;cursor:pointer}
+/* exercise picker */
+.sheet{position:fixed;inset:0;z-index:25;background:var(--bg);padding:calc(10px + env(safe-area-inset-top,0px)) 16px calc(10px + env(safe-area-inset-bottom,0px))}
+.sheet-in{max-width:560px;height:100%;margin:0 auto;display:flex;flex-direction:column;gap:8px;min-height:0}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sheet-list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:6px;padding-bottom:8px}
+.sheet-foot{display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--line)}
+.sheet-foot .primary{flex:1;align-self:auto}
+.primary:disabled{opacity:.45;cursor:default}
+.pick{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;display:flex;flex-direction:column;gap:8px;padding-bottom:8px}
+.pick.on{border-color:var(--accent)}
+.pick-row{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:10px 12px 0;background:none;border:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;width:100%}
+.pick-main{display:flex;flex-direction:column;min-width:0}
+.pick-info{font-size:12px;color:var(--muted);line-height:1.4}
+.box{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:800}
+.pick.on .box{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pick .dose{font-size:17px;color:var(--muted)}
+.pick.on .dose{color:var(--accent)}
+.pick>.logrow,.pick>.howto{margin-inline:12px}
+.logrow.rev{grid-template-columns:1fr 2fr}
+.logrow.one{grid-template-columns:1fr}
+select{font:600 16px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .reset{align-self:flex-start;font:500 13px var(--body);background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px 0}
 
 .rest{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:18px;text-align:center}
@@ -130,6 +159,10 @@ td{padding:8px 0;border-bottom:1px solid var(--line);vertical-align:top}
 td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:12px}
 .meal{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
 .meal time{font:700 16px var(--display);color:var(--accent)}
+.meal-top{display:flex;justify-content:space-between;align-items:baseline;gap:4px 10px;flex-wrap:wrap}
+.kc{font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.meal ul{margin:4px 0 0;padding-left:18px}
+.meal.total{background:var(--soft);border-color:transparent;display:flex;justify-content:space-between;gap:10px;font-weight:700}
 .rules li{padding:8px 0;border-bottom:1px solid var(--line)}
 .rules li:last-child{border:none}
 
@@ -141,12 +174,14 @@ td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums
 .timer button{font:700 14px var(--body);border:none;border-radius:8px;padding:9px 10px;background:color-mix(in srgb,var(--bg) 16%,transparent);color:var(--bg);cursor:pointer}
 .timer button.stop{background:var(--accent);color:var(--accent-ink)}
 .timer.ring .clock{color:var(--accent)}
+/* hide the rest-timer bar while typing so it cannot cover the field above the keyboard */
+body.typing .timer{display:none}
 @media (prefers-reduced-motion:no-preference){.timer.ring{animation:pulse .5s ease-in-out 4}}
 @keyframes pulse{50%{opacity:.6}}
 /* journal */
 .logrow{display:grid;grid-template-columns:2fr 1fr;gap:8px}
 .logrow label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted);min-width:0}
-input,textarea{font:500 15px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+input,textarea{font:500 16px var(--body);scroll-margin-bottom:96px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
 input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 textarea{resize:vertical}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -204,7 +239,7 @@ textarea{resize:vertical}
     <div class="eyebrow">Sổ tay tập luyện</div>
     <h1>Eo gọn, vai rộng.<br><span>Dáng chữ V.</span></h1>
     <div class="stats">
-      <span><b>4 buổi</b> mỗi tuần</span>
+      <span><b><span class="per-week">4</span> buổi</b> mỗi tuần</span>
       <span>Giảm <b>0,3–0,5 kg/tuần</b></span>
     </div>
   </header>
@@ -219,9 +254,14 @@ textarea{resize:vertical}
 
   <!-- TRAIN -->
   <section class="section" id="p-home" role="tabpanel" hidden>
+    <div class="seg two" id="views" role="tablist" aria-label="Loại bài">
+      <button id="view-mine" data-v="mine" role="tab">📋 Bài của anh</button>
+      <button id="view-tpl" data-v="tpl" role="tab">📚 Bài mẫu</button>
+    </div>
     <div class="seg" id="modes" role="radiogroup" aria-label="Chế độ tập">
-      <button id="mode-home" data-m="home" role="radio">🏠 Ở nhà<small>Tạ 5kg, 7kg · 19h20</small></button>
-      <button id="mode-park" data-m="park" role="radio">🌳 Công viên<small>Xà đơn, xà kép</small></button>
+      <button id="mode-band" data-m="band" role="radio">🎒 Không tạ<small>Dây chun, balo · 19h20</small></button>
+      <button id="mode-home" data-m="home" role="radio">🏠 Ở nhà<small>Tạ đơn · 19h20</small></button>
+      <button id="mode-park" data-m="park" role="radio">🌳 Công viên<small>Xà đơn, ghế đá</small></button>
       <button id="mode-gym" data-m="gym" role="radio">🏋️ Gym<small>Máy và tạ</small></button>
     </div>
     <div class="days" id="days"></div>
@@ -259,9 +299,9 @@ textarea{resize:vertical}
     <p class="cue"><b>Kéo người dưới bàn dưới 5 lần:</b> co gối lại cho dễ hơn. <b>Hít đất dưới 10 lần:</b> 2 tuần đầu chống gối. <b>Hít đất trên 25 lần:</b> kê chân lên ghế cho khó hơn.</p>
     <h2>Dụng cụ</h2>
     <table>
-      <tr><td><b>Tạ đơn 5kg và 7kg</b><br><span class="cue">Đang có. 5kg cho vai, 7kg cho lưng, tay, chân.</span></td><td>✅ Có</td></tr>
+      <tr><td><b>Bộ dây chun kháng lực</b><br><span class="cue">Đang có. Dùng cho kéo dây xuống, face pull, kéo giãn, cuốn tay. Đang dùng chế độ Không tạ.</span></td><td>✅ Có</td></tr>
+      <tr><td><b>Bộ tạ đơn tháo lắp 20kg</b><br><span class="cue">Sắp mua. Mỗi tay 3–10kg, có thanh nối thành tạ đòn. Có tạ thì chuyển sang chế độ Ở nhà.</span></td><td>Sắp mua</td></tr>
       <tr><td><b>Xà đơn treo cửa</b><br><span class="cue">Nên mua đầu tiên. Có xà thì thay bài kéo bàn bằng kéo xà, lưng rộng nhanh hơn nhiều.</span></td><td>~200–350k</td></tr>
-      <tr><td><b>Bộ dây chun kháng lực</b><br><span class="cue">Mua sau, để tập kéo xuống và face pull.</span></td><td>~150–300k</td></tr>
       <tr><td><b>Thảm tập</b></td><td>~100–200k</td></tr>
     </table>
     <p class="cue"><b>Khi tạ 7kg quá nhẹ</b> (làm dễ quá 20 lần): hạ chậm 3–4 giây, dừng 1 giây ở điểm khó nhất, hoặc chuyển sang bài một chân, một tay. Sau 2–3 tháng nên mua thêm cặp 10–12kg.</p>
@@ -302,7 +342,7 @@ textarea{resize:vertical}
     <div id="logbody" class="section"></div>
     <div class="ex" id="backup">
       <h3>Sao lưu dữ liệu</h3>
-      <p class="cue">Nhật ký lưu ngay trên điện thoại này. Mỗi tháng anh nên tải bản sao lưu rồi gửi vào Zalo hoặc Google Drive của mình. Khi đổi máy, bấm Khôi phục và chọn tệp đó.</p>
+      <p class="cue">Nhật ký lưu ngay trên điện thoại này. Bản sao lưu gồm cả ảnh, ngày tập và danh sách bài anh tự chỉnh. Mỗi tháng anh nên tải bản sao lưu rồi gửi vào Zalo hoặc Google Drive của mình. Khi đổi máy, bấm Khôi phục và chọn tệp đó.</p>
       <div class="chips">
         <button class="primary" id="backup-save" type="button">Tải bản sao lưu</button>
         <label class="chip" for="backup-file" id="backup-pick">Khôi phục từ tệp</label>
@@ -314,8 +354,10 @@ textarea{resize:vertical}
 
   <!-- WEEK -->
   <section class="section" id="p-week" role="tabpanel" hidden>
-    <h2>4 buổi mỗi tuần · chế độ <span id="week-mode">ở nhà</span></h2>
-    <p class="muted">Đổi chế độ ở tab Tập. Ngày tập: về đến nhà là tập luôn khoảng 1 tiếng, xong đi chợ gần nhà rồi nấu ăn tối. Ngày nghỉ (T4, T6, CN): đi chợ luôn, mua đồ cho 2 ngày để hôm sau tập xong không cần đi chợ.</p>
+    <h2><span class="per-week">4</span> buổi mỗi tuần · chế độ <span id="week-mode">ở nhà</span></h2>
+    <p class="muted">Đổi chế độ ở tab Tập. Ngày tập: về đến nhà là tập luôn khoảng 1 tiếng, xong đi chợ gần nhà rồi nấu ăn tối. Ngày nghỉ (<span class="rest-days">T4, T6, CN</span>): đi chợ luôn, mua đồ cho 2 ngày để hôm sau tập xong không cần đi chợ.</p>
+    <div class="chips"><button type="button" class="chip" id="sched-toggle">📅 Chọn ngày tập</button><button type="button" class="chip" id="sched-reset" hidden>Trả về lịch mặc định (T2, T3, T5, T7)</button></div>
+    <p class="cue" id="sched-hint" hidden>Mỗi thứ chọn một buổi hoặc Nghỉ. Một buổi có thể xếp vào nhiều ngày. Lịch này dùng chung cho mọi chế độ.</p>
     <ul class="plain week" id="weeklist"></ul>
     <h2>Một buổi khoảng 45–60 phút</h2>
     <div class="split">
@@ -354,18 +396,48 @@ textarea{resize:vertical}
       <tr><td>Ngủ</td><td>7–8 tiếng</td></tr>
     </table>
     <h2>Ngày tập (về nhà 19h15, tập trước rồi đi chợ)</h2>
+    <p class="muted">Thịt, cá tính theo cân lúc còn sống. Số liệu là ước lượng, lệch 10% không sao.</p>
     <div class="section">
-      <div class="meal"><time>7h00</time> · <b>Sáng</b><p>2 quả trứng + 1 bánh mì, hoặc phở bò ít bánh nhiều thịt. Cà phê ít đường.</p></div>
-      <div class="meal"><time>12h00</time> · <b>Trưa</b><p>1 bát cơm + 150g ức gà, bò hoặc cá + rau thoải mái. Tối hôm trước nấu dư một suất để mang đi.</p></div>
-      <div class="meal"><time>17h30</time> · <b>Ăn nhẹ buổi chiều, trước tập</b><p>Bữa này phải đủ no vì tối ăn muộn: 1 bánh mì + 2 quả trứng luộc, hoặc 1 quả chuối + 1 hộp sữa chua + 1 nắm hạt. Mang sẵn từ nhà.</p></div>
-      <div class="meal"><time>21h15</time> · <b>Tối, sau tập</b><p>Tập xong 20h20 đi chợ hoặc siêu thị gần nhà (tối chợ ít đồ thì mua ở siêu thị). Nấu món nhanh 15 phút: ½–1 bát cơm + 150g thịt nạc, cá hoặc đậu phụ + nhiều rau. Cơm hẹn giờ nồi từ sáng. Ăn xong trước 21h45.</p></div>
+      <div class="meal"><div class="meal-top"><span><time>7h00</time> · <b>Sáng</b></span><span class="kc">~540 kcal · 25g đạm</span></div>
+        <ul><li>2 quả trứng luộc hoặc ốp ít dầu</li><li>1 ổ bánh mì</li><li>1 hộp sữa tươi ít đường 180ml</li><li>Cà phê ít đường hoặc đen</li></ul></div>
+      <div class="meal"><div class="meal-top"><span><time>12h00</time> · <b>Trưa</b></span><span class="kc">~455 kcal · 39g đạm</span></div>
+        <ul><li>1 bát cơm, xới bằng miệng bát</li><li><b>150g ức gà, thịt nạc hoặc cá</b></li><li>Rau luộc hoặc canh thoải mái, nấu với ½ thìa dầu</li></ul>
+        <p class="cue">Tối hôm trước nấu dư một suất để mang đi.</p></div>
+      <div class="meal"><div class="meal-top"><span><time>17h30</time> · <b>Chiều, trước tập</b></span><span class="kc">~340 kcal · 12g đạm</span></div>
+        <ul><li>1 quả chuối</li><li>1 hộp sữa chua không đường</li><li><b>1 nắm lạc hoặc hạt (30g)</b>: khoảng 40 hạt lạc, 18 hạt điều hoặc 23 hạt hạnh nhân</li></ul>
+        <p class="cue">Bữa này phải đủ no vì tối ăn muộn. Mang sẵn từ nhà, hạt chia sẵn túi nhỏ 30g, đừng ăn thẳng từ túi to.</p></div>
+      <div class="meal"><div class="meal-top"><span><time>21h15</time> · <b>Tối, sau tập</b></span><span class="kc">~575 kcal · 45g đạm</span></div>
+        <ul><li>1 bát cơm (no quá thì ½ bát)</li><li><b>150g thịt nạc, cá hoặc bò</b></li><li>½ bìa đậu phụ</li><li>Nhiều rau, nấu với ½ thìa dầu</li></ul>
+        <p class="cue">Tập xong 20h20 đi chợ hoặc siêu thị gần nhà, nấu món nhanh 15 phút. Cơm hẹn giờ nồi từ sáng. Ăn xong trước 21h45.</p></div>
+      <div class="meal total"><span>Tổng ngày tập</span><span>~1.910 kcal · ~121g đạm</span></div>
     </div>
-    <h2>Ngày đi chợ (T4, T6, CN)</h2>
+    <h2>Ngày đi chợ (<span class="rest-days">T4, T6, CN</span>)</h2>
+    <p class="muted">Sáng và trưa giống ngày tập. Bỏ bữa chiều, đói thì 1 hộp sữa chua. Cả ngày khoảng 1.600–1.700 kcal, ngày nghỉ ít vận động nên ăn ít hơn là hợp lý.</p>
     <div class="section">
       <div class="meal"><time>19h15</time> · <b>Về đến nhà, đi chợ</b><p>Mua thịt, cá và rau cho hôm nay và ngày mai. Về nhà chia phần 150g, ướp sẵn, rửa rau để tủ lạnh.</p></div>
       <div class="meal"><time>20h15</time> · <b>Tối</b><p>1 bát cơm + 150g đạm + nhiều rau. Nấu dư một suất mang đi trưa.</p></div>
     </div>
-    <p class="muted">Ngày đi chợ bỏ bữa 17h30, hoặc thay bằng 1 hộp sữa chua nếu đói.</p>
+    <h2>Đổi món cho đỡ chán</h2>
+    <p class="muted">Mỗi dòng là các lựa chọn tương đương nhau, đổi qua lại thoải mái.</p>
+    <ul class="plain rules">
+      <li><b>150g ức gà</b> ≈ 150g thịt lợn thăn ≈ 150g bò nạc ≈ 180g cá basa hoặc cá thu ≈ 4 quả trứng ≈ 2 bìa đậu phụ</li>
+      <li><b>1 bát cơm</b> ≈ 1 củ khoai lang vừa ≈ 1 bắp ngô ≈ 1 bát bún hoặc phở ít bánh</li>
+      <li><b>Bánh mì + 2 trứng</b> ≈ 1 bát phở bò ít bánh, nhiều thịt ≈ xôi nhỏ + 2 trứng</li>
+      <li><b>1 nắm lạc 30g</b> ≈ 1 quả trứng luộc ≈ 1 hộp sữa chua nữa</li>
+      <li>Nên có <b>2–3 bữa cá mỗi tuần</b>, nhất là cá thu, cá nục, cá hồi: nhiều chất béo tốt.</li>
+    </ul>
+    <h2>Đi chợ cho 1 tuần</h2>
+    <table>
+      <tr><td><b>Đạm</b><br><span class="cue">Ức gà, thịt thăn, cá thu hoặc basa, bò</span></td><td>~2 kg</td></tr>
+      <tr><td>Trứng</td><td>20–25 quả</td></tr>
+      <tr><td>Đậu phụ</td><td>3–4 bìa</td></tr>
+      <tr><td><b>Tinh bột</b><br><span class="cue">Gạo, bánh mì (hoặc đổi phở), khoai lang</span></td><td>7 ổ bánh mì</td></tr>
+      <tr><td>Chuối</td><td>4–5 nải nhỏ</td></tr>
+      <tr><td>Sữa chua không đường</td><td>7–10 hộp</td></tr>
+      <tr><td>Sữa tươi ít đường 180ml</td><td>7 hộp</td></tr>
+      <tr><td>Lạc hoặc hạt, rang mộc</td><td>~200 g</td></tr>
+      <tr><td><b>Rau</b><br><span class="cue">Mua vào ngày đi chợ, mỗi lần đủ cho 2 ngày</span></td><td>Theo ngày</td></tr>
+    </table>
     <h2>Món nhanh 15 phút</h2>
     <ul class="plain rules">
       <li><b>Bò xào rau</b> (cải, súp lơ, đậu que): xào lửa to, ít dầu.</li>
@@ -395,6 +467,15 @@ textarea{resize:vertical}
     <button type="button" id="viewer-prev">‹ Trước</button>
     <button type="button" id="viewer-del">Xoá ảnh</button>
     <button type="button" id="viewer-next">Sau ›</button>
+  </div>
+</div>
+<div id="picker" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="picker-title">
+  <div class="sheet-in">
+    <div class="sheet-head"><h2 id="picker-title" style="margin:0">Thêm bài</h2><button type="button" class="chip" id="picker-close">Đóng</button></div>
+    <input id="picker-q" type="search" placeholder="Tìm bài: kéo xà, squat, vai…" autocomplete="off" aria-label="Tìm bài">
+    <div class="chips" id="picker-groups" role="radiogroup" aria-label="Nhóm bài"></div>
+    <div class="sheet-list" id="picker-list"></div>
+    <div class="sheet-foot"><button type="button" class="primary" id="picker-add" disabled>Chọn bài để thêm</button></div>
   </div>
 </div>
 <div class="timer" id="timer">
@@ -568,21 +649,33 @@ const H = {
   F:{t:"Toàn thân + đốt mỡ (ở nhà)",s:"Làm vòng tròn, nghỉ 1 phút mỗi vòng",list:[["invrow",3,"10–15"],["pushup",3,"10–25","Dừng khi còn sức làm thêm 1–2 lần"],["lateral",3,"15–20","Tạ 5kg"],["jumpsq",3,"15"],["climber",3,"30s"],["walkh",1,"20–30′"]]}
 };
 const P = {
-  A:{t:"Lưng và vai (công viên)",s:"Xà đơn, xà thấp, tạ 5kg",list:[["pullup",4,"5–10","Dừng khi còn sức làm thêm 1–2 lần. Chưa được 5 lần thì nhảy lên, hạ chậm 5 giây"],["invrow",3,"12","Dùng xà thấp ngang hông"],["pike",3,"8–10","Chống chân lên ghế đá cho khó hơn"],["lateral",4,"15–20","Mang tạ 5kg ra công viên"],["rearfly",3,"15","Tạ 5kg"],["legraise",3,"10","Treo trên xà đơn"]]},
-  L:{t:"Chân + bụng (công viên)",s:"Ghế đá, bãi cỏ, tạ 7kg",list:[["bulgarian",3,"12","Mỗi chân, gác chân lên ghế đá"],["jumpsq",3,"15"],["slrdl",3,"12","Mỗi chân, tạ 7kg"],["bridge",3,"12","Một chân, tựa vai lên ghế đá"],["plank",3,"45s"],["walkh",1,"10′","Chạy chậm quanh công viên"]]},
-  B:{t:"Ngực, tay, lưng (công viên)",s:"Xà kép, xà đơn, xà thấp",list:[["dips",3,"5–12","Dừng khi còn sức làm thêm 1–2 lần. Chưa lên được thì chống xà kép giữ 20 giây"],["pushup",3,"10–25","Dừng khi còn sức làm thêm 1–2 lần"],["invrow",3,"12","Dùng xà thấp ngang hông"],["pullup",3,"5–10","Nắm ngửa tay để tập thêm bắp tay trước"],["lateral",4,"15–20","Mang tạ 5kg ra công viên"],["rearfly",3,"15","Tạ 5kg"]]},
-  F:{t:"Toàn thân (công viên)",s:"Xà đơn, xà kép, rồi chạy bộ",list:[["pullup",3,"5–10","Dừng khi còn sức làm thêm 1–2 lần"],["dips",3,"5–12","Dừng khi còn sức làm thêm 1–2 lần"],["invrow",3,"12","Dùng xà thấp ngang hông"],["lateral",3,"15–20","Mang tạ 5kg ra công viên"],["legraise",3,"10","Treo trên xà đơn"],["walkh",1,"20′","Chạy chậm hoặc đi bộ nhanh quanh công viên"]]}
+  A:{t:"Lưng và vai (công viên)",s:"Xà đơn, ghế đá, tạ hoặc chai nước",list:[["pullup",5,"5–10","Dừng khi còn sức làm thêm 1–2 lần. Chưa được 5 lần thì nhảy lên, hạ chậm 5 giây"],["pike",3,"8–10","Chống chân lên ghế đá cho khó hơn"],["lateral",4,"15–20","Tạ 5kg hoặc 2 chai nước 1,5L"],["rearfly",3,"15","Tạ 5kg hoặc chai nước"],["legraise",3,"10","Treo trên xà đơn"]]},
+  L:{t:"Chân + bụng (công viên)",s:"Ghế đá, bãi cỏ, balo",list:[["bulgarian",3,"12","Mỗi chân, gác chân lên ghế đá"],["jumpsq",3,"15"],["slrdl",3,"12","Mỗi chân, cầm balo hoặc tay không"],["bridge",3,"12","Một chân, tựa vai lên ghế đá"],["plank",3,"45s"],["walkh",1,"10′","Chạy chậm quanh công viên"]]},
+  B:{t:"Ngực, tay, lưng (công viên)",s:"Xà đơn, ghế đá, tạ hoặc chai nước",list:[["pushup",4,"10–25","Dừng khi còn sức làm thêm 1–2 lần. Dễ quá 25 lần thì kê chân lên ghế đá"],["diamond",3,"8–15","Dừng khi còn sức làm thêm 1–2 lần"],["pullup",4,"5–10","Nắm ngửa tay để tập thêm bắp tay trước"],["lateral",4,"15–20","Tạ 5kg hoặc 2 chai nước 1,5L"],["rearfly",3,"15","Tạ 5kg hoặc chai nước"]]},
+  F:{t:"Toàn thân (công viên)",s:"Xà đơn, bãi cỏ, rồi chạy bộ",list:[["pullup",4,"5–10","Dừng khi còn sức làm thêm 1–2 lần"],["pushup",3,"10–25","Dừng khi còn sức làm thêm 1–2 lần"],["lateral",3,"15–20","Tạ 5kg hoặc 2 chai nước 1,5L"],["legraise",3,"10","Treo trên xà đơn"],["walkh",1,"20′","Chạy chậm hoặc đi bộ nhanh quanh công viên"]]}
 };
 /* 5-minute warm-up shown at the top of every session */
 const WARM = {
+  band:["Nhảy tại chỗ hoặc chạy bước nhỏ 1 phút.","Xoay vai, xoay hông, xoay cổ tay mỗi chiều 10 vòng.","Squat không tạ 10 lần, hít đất chống gối 8 lần.","Kéo giãn dây chun nhẹ 1 × 15 lần để làm nóng vai."],
   home:["Nhảy tại chỗ hoặc chạy bước nhỏ 1 phút.","Xoay vai, xoay hông, xoay cổ tay mỗi chiều 10 vòng.","Squat không tạ 10 lần, hít đất chống gối 8 lần.","Làm 1 hiệp nhẹ của bài đầu tiên với nửa mức tạ."],
   park:["Chạy chậm 2 phút quanh công viên.","Xoay vai, xoay hông, xoay cổ tay mỗi chiều 10 vòng.","Treo người trên xà 2 lần × 20 giây.","Kéo bả vai trên xà: treo thẳng tay, chỉ kéo bả vai xuống rồi thả, 2 × 8 lần."],
   gym:["Đạp xe hoặc đi bộ nhanh 3 phút.","Xoay vai, xoay hông mỗi chiều 10 vòng.","Kéo cáp về mặt nhẹ 1 × 15 lần để làm nóng vai.","Làm 1–2 hiệp nhẹ của bài đầu tiên với nửa mức tạ."]
 };
-const PLAN = {home:H, park:P, gym:W};
-const MODE_NAME = {home:"ở nhà", park:"công viên", gym:"phòng gym"};
+/* no dumbbells yet: resistance band, a backpack of books, two 1.5L water bottles and a sturdy table */
+const B = {
+  A:{t:"Lưng và vai (không tạ)",s:"Dây chun, balo và cái bàn",list:[["invrow",4,"10–15","Hạ chậm 3 giây"],["bandpd",4,"12–15","Móc dây lên xà cửa hoặc khe cửa phía trên"],["bagrow",3,"12–15","Balo sách, mỗi tay"],["pike",3,"8–10","Thay cho đẩy vai"],["lateral",4,"15–20","Dẫm lên dây chun, hoặc cầm 2 chai nước 1,5L"],["bandfp",3,"15–20"]]},
+  L:{t:"Chân + bụng (không tạ)",s:"Balo, ghế và dây chun",list:[["bulgarian",3,"12","Mỗi chân, đeo balo"],["squat",4,"20","Ôm balo trước ngực, hạ chậm 3 giây"],["slrdl",3,"12","Mỗi chân, cầm balo"],["bridge",3,"12","Một chân, mỗi bên"],["lateral",3,"15–20","Dây chun hoặc chai nước, thêm cho vai rộng"],["plank",3,"45s"],["lyingleg",3,"12–15"]]},
+  B:{t:"Ngực, vai, tay (không tạ)",s:"Sàn, dây chun và balo",list:[["pushup",4,"10–25","Dừng khi còn sức làm thêm 1–2 lần"],["bagrow",4,"12–15","Balo sách, mỗi tay"],["lateral",4,"15–20","Dẫm lên dây chun, hoặc cầm 2 chai nước 1,5L"],["bpa",3,"15–20"],["diamond",3,"8–15","Dừng khi còn sức làm thêm 1–2 lần"],["bandcurl",3,"12–15","Dẫm lên giữa dây chun"]]},
+  F:{t:"Toàn thân + đốt mỡ (không tạ)",s:"Làm vòng tròn, nghỉ 1 phút mỗi vòng",list:[["invrow",3,"10–15"],["pushup",3,"10–25","Dừng khi còn sức làm thêm 1–2 lần"],["lateral",3,"15–20","Dây chun hoặc chai nước"],["jumpsq",3,"15"],["climber",3,"30s"],["walkh",1,"20–30′"]]}
+};
+const PLAN = {band:B, home:H, park:P, gym:W};
+const MODE_NAME = {band:"không tạ", home:"ở nhà", park:"công viên", gym:"phòng gym"};
 // index 0 = Monday
-const DAYS = [["T2","A"],["T3","L"],["T4",null],["T5","B"],["T6",null],["T7","F"],["CN",null]];
+const DAY_NAMES = ["T2","T3","T4","T5","T6","T7","CN"];
+const DEFAULT_SCHED = ["A","L",null,"B",null,"F",null];
+let DAYS = [];
+function buildDays(){DAYS=DAY_NAMES.map((d,i)=>[d,sched[i]])}
+function perWeek(){return sched.filter(Boolean).length}
 const FULL = ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ nhật"];
 
 const store = {
@@ -599,6 +692,28 @@ const todayKey = localKey(new Date());
 let selDay = todayIdx;
 let mode = store.get("mode","home");
 if(!PLAN[mode]) mode="home";
+/* which session each weekday trains (null = rest); the user picks it in the Lịch tab */
+let sched = (s=>Array.isArray(s)&&s.length===7?s.map(w=>["A","L","B","F"].includes(w)?w:null):DEFAULT_SCHED.slice())(store.get("days",null));
+buildDays();
+
+/* ---- the user's own exercise lists: plans[mode][wk] = [{k,id,sets,reps,note}]; a missing day means "same as the template".
+   k keys the journal's sets/reps/kg, so template rows keep "e0", "e1"… and old journal entries still line up. ---- */
+let plans = store.get("plans",{});
+let view = store.get("view","mine")==="tpl"?"tpl":"mine";
+let editing = false;
+function tplList(m,wk){return PLAN[m][wk].list.map(([id,sets,reps,note],i)=>({k:"e"+i,id,sets,reps,note:note||""}))}
+function isCustom(m,wk){return !!(plans[m]&&Array.isArray(plans[m][wk]))}
+function getList(m,wk){return isCustom(m,wk)?plans[m][wk].filter(x=>EX[x.id]).map(x=>Object.assign({},x)):tplList(m,wk)}
+function setList(m,wk,list){(plans[m]=plans[m]||{})[wk]=list;store.set("plans",plans);if(m===mode&&logs[wid(wk)])commit(wk)}
+function resetList(m,wk){if(plans[m])delete plans[m][wk];store.set("plans",plans);if(m===mode&&logs[wid(wk)])commit(wk)}
+function newKey(){return "x"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
+/* default dose: what this mode's template uses, else any template, else a few fixed ones for exercises no template uses */
+const DEF={bandpd:[3,"12"],bpa:[3,"15"],bandfp:[3,"15"],bagrow:[3,"12"],bandcurl:[3,"12"]};
+function defDose(id){
+  for(const pl of [PLAN[mode],H,P,W])for(const d of Object.values(pl))for(const x of d.list)if(x[0]===id)return [x[1],x[2]];
+  return DEF[id]||[3,"12"];
+}
+function doseText(sets,reps){return (sets>1?sets+"×":"")+reps}
 
 /* ---- journal store: local copy always, synced to db when available ---- */
 let logs = store.get("logs",{});
@@ -626,11 +741,11 @@ function removeDoc(id){delete logs[id];saveDoc(id)}
 function wid(wk){return "w_"+todayKey+"_"+mode+"_"+wk}
 function blank(wk){return {type:"workout",date:todayKey,mode,wk,sets:{},reps:{},kg:{},feel:"",note:""}}
 function hasData(L){return Object.values(L.sets||{}).some(a=>a.some(Boolean))||Object.values(L.reps||{}).some(Boolean)||Object.values(L.kg||{}).some(Boolean)||!!L.feel||!!(L.note||"").trim()}
-function maxNum(s){const m=String(s||"").match(/\d+(?:[.,]\d+)?/g);return m?Math.max(...m.map(x=>parseFloat(x.replace(",",".")))):0}
+/* reps are whole numbers, so "12,10,9" and "12.10.9" both read as 12, 10, 9 */
+function maxNum(s){const m=String(s||"").match(/\d+/g);return m?Math.max(...m.map(Number)):0}
 function summarize(L){
-  const w=PLAN[L.mode][L.wk];
-  L.title=w.t;
-  L.ex=w.list.map(([id,sets],ei)=>({id,n:EX[id].n,total:sets,done:(L.sets["e"+ei]||[]).filter(Boolean).length,reps:L.reps["e"+ei]||"",kg:L.kg["e"+ei]||"",best:maxNum(L.reps["e"+ei])}));
+  L.title=PLAN[L.mode][L.wk].t;
+  L.ex=getList(L.mode,L.wk).map(({k,id,sets})=>({id,n:EX[id].n,total:sets,done:(L.sets[k]||[]).filter(Boolean).length,reps:L.reps[k]||"",kg:L.kg[k]||"",best:maxNum(L.reps[k])}));
   L.done=L.ex.reduce((a,x)=>a+x.done,0);L.total=L.ex.reduce((a,x)=>a+x.total,0);
   L.updatedAt=Date.now();
 }
@@ -644,9 +759,13 @@ function ensure(wk){const id=wid(wk);if(!logs[id])logs[id]=blank(wk);return logs
 function renderModes(){
   document.querySelectorAll("#modes button").forEach(b=>{
     b.setAttribute("aria-checked",b.dataset.m===mode);
-    b.onclick=()=>{mode=b.dataset.m;store.set("mode",mode);renderAll()};
+    b.onclick=()=>{mode=b.dataset.m;store.set("mode",mode);editing=false;renderAll()};
   });
-  document.getElementById("extra-home").hidden=mode!=="home";
+  document.querySelectorAll("#views button").forEach(b=>{
+    b.setAttribute("aria-checked",b.dataset.v===view);b.setAttribute("aria-selected",b.dataset.v===view);
+    b.onclick=()=>{view=b.dataset.v;store.set("view",view);editing=false;renderModes();renderSession()};
+  });
+  document.getElementById("extra-home").hidden=mode!=="home"&&mode!=="band";
   document.getElementById("extra-park").hidden=mode!=="park";
   document.getElementById("extra-gym").hidden=mode!=="gym";
 }
@@ -658,49 +777,60 @@ function yt(q){return "https://www.youtube.com/results?search_query="+encodeURIC
 function renderDays(){
   const el=document.getElementById("days");
   el.innerHTML=DAYS.map(([d,w],i)=>`<button id="day-${i}" class="${w?"train":""}" aria-pressed="${i===selDay}" data-i="${i}">${d}<i>${i===todayIdx?"hôm nay":(w?"tập":"nghỉ")}</i></button>`).join("");
-  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{selDay=+b.dataset.i;renderDays();renderSession()});
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{selDay=+b.dataset.i;editing=false;renderDays();renderSession()});
 }
 
 const FEELS=["Nhẹ","Vừa","Nặng","Quá sức"];
+/* muscles, steps, common mistake and breathing for one exercise */
+function howHTML(id){
+  const e=EX[id],m=MORE[id];
+  return `${m?`<p class="cue"><b>Cơ chính:</b> ${esc(m[0])}</p>`:""}
+    <ol>${e.how.map(h=>`<li>${esc(h)}</li>`).join("")}</ol>
+    <p class="cue"><b>Mẹo:</b> ${esc(e.tip)}</p>
+    ${m&&m[1]?`<p class="cue"><b>Lỗi hay gặp:</b> ${esc(m[1])}</p>`:""}
+    ${m&&m[2]!==""?`<p class="cue"><b>Thở:</b> ${esc((m&&m[2])||"thở ra khi dùng sức, hít vào khi hạ về.")}</p>`:""}`;
+}
 function renderSession(){
   const el=document.getElementById("session");
   const day=selDay, wk=DAYS[day][1];
   if(!wk){
-    el.innerHTML=`<div class="rest"><b>${FULL[day]}: nghỉ</b><p class="muted">Đi bộ 8.000–10.000 bước, ăn đủ đạm, ngủ sớm.<br>Cơ lớn lên trong lúc nghỉ.</p></div>`;
+    el.innerHTML=`<div class="rest"><b>${FULL[day]}: nghỉ</b><p class="muted">Đi bộ 8.000–10.000 bước, ăn đủ đạm, ngủ sớm.<br>Cơ lớn lên trong lúc nghỉ.</p></div>
+      <button type="button" class="chip" style="align-self:flex-start" data-sched-go>📅 Muốn tập hôm nay? Đổi ngày tập</button>`;
+    el.querySelector("[data-sched-go]").onclick=openSched;
     return;
   }
-  const w=PLAN[mode][wk];
+  if(view==="tpl") return renderTemplate(el,day,wk);
+  if(editing) return renderEditor(el,day,wk);
+  const w=PLAN[mode][wk], list=getList(mode,wk);
   const L=logs[wid(wk)]||blank(wk);
-  const total=w.list.reduce((a,x)=>a+x[1],0);
-  const countDone=()=>Object.values(L.sets).reduce((a,s)=>a+s.filter(Boolean).length,0);
+  const total=list.reduce((a,x)=>a+x.sets,0);
+  const countDone=Lx=>list.reduce((a,x)=>a+(Lx.sets[x.k]||[]).filter(Boolean).length,0);
   el.innerHTML=`
-    <div class="session-head"><h2>${FULL[day]} · ${w.t}</h2><span class="progress" id="prog">${countDone()}/${total} hiệp</span></div>
-    <p class="muted" style="margin-top:-6px">${w.s}. Bấm ô số sau mỗi hiệp, ghi số lần và mức tạ. Đồng hồ nghỉ ${mode==="gym"?90:60} giây tự chạy.</p>
+    <div class="session-head"><h2>${FULL[day]} · ${w.t}</h2><span class="progress" id="prog">${countDone(L)}/${total} hiệp</span></div>
+    <p class="muted" style="margin-top:-6px">${isCustom(mode,wk)?"Buổi anh đã chỉnh, bản gốc ở tab Bài mẫu":w.s}. Bấm ô số sau mỗi hiệp, ghi số lần và mức tạ. Đồng hồ nghỉ ${mode==="gym"?90:60} giây tự chạy.</p>
+    <div class="chips"><button type="button" class="chip" id="edit-on">✏️ Sửa danh sách bài</button><button type="button" class="chip" id="add-top">＋ Thêm bài</button><button type="button" class="chip" data-sched-go>📅 Đổi ngày tập</button></div>
     <details class="howto" id="warm-${mode}-${wk}"><summary>🔥 Khởi động 5 phút trước khi tập</summary><div class="body"><ol>${WARM[mode].map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div></details>
     ${day!==todayIdx?`<p class="cue banner">Đang xem lịch ${FULL[day]}. Những gì anh ghi sẽ lưu vào nhật ký hôm nay (${fmtDate(todayKey)}).</p>`:""}
-    ${w.list.map(([id,sets,reps,note],ei)=>{const e=EX[id];const st=L.sets["e"+ei]||[];return `
+    ${list.length?"":`<div class="rest"><b>Buổi này chưa có bài nào</b><p class="muted">Bấm "Thêm bài" để chọn, hoặc vào tab Bài mẫu để lấy lại giáo án gợi ý.</p></div>`}
+    ${list.map(({k,id,sets,reps,note},ei)=>{const e=EX[id];const st=L.sets[k]||[];return `
       <article class="ex${e.key?" key":""}">
         <div class="ex-top">
           <div><div class="ex-name">${esc(e.n)}</div><div class="ex-en">${esc(e.en)}</div>${e.key?'<span class="tag">Quan trọng cho dáng chữ V</span>':""}</div>
-          <div class="dose">${sets>1?sets+"×":""}${esc(reps)}</div>
+          <div class="dose">${esc(doseText(sets,reps))}</div>
         </div>
-        <div class="sets">${Array.from({length:sets},(_,s)=>`<button class="set${st[s]?" on":""}" id="set-${mode}-${wk}-${ei}-${s}" data-e="${ei}" data-s="${s}" data-n="${sets}" aria-pressed="${!!st[s]}" aria-label="${esc(e.n)} hiệp ${s+1}">${s+1}</button>`).join("")}</div>
+        <div class="sets">${Array.from({length:sets},(_,s)=>`<button class="set${st[s]?" on":""}" id="set-${mode}-${wk}-${ei}-${s}" data-e="${k}" data-s="${s}" data-n="${sets}" aria-pressed="${!!st[s]}" aria-label="${esc(e.n)} hiệp ${s+1}">${s+1}</button>`).join("")}</div>
         <div class="logrow">
-          <label for="reps-${mode}-${wk}-${ei}">Số lần đã làm<input id="reps-${mode}-${wk}-${ei}" data-e="${ei}" data-f="reps" placeholder="vd: 12, 10, 9" value="${esc(L.reps["e"+ei]||"")}" autocomplete="off"></label>
-          <label for="kg-${mode}-${wk}-${ei}">Tạ (kg)<input id="kg-${mode}-${wk}-${ei}" data-e="${ei}" data-f="kg" inputmode="decimal" placeholder="—" value="${esc(L.kg["e"+ei]||"")}" autocomplete="off"></label>
+          <label for="reps-${mode}-${wk}-${ei}">Số lần đã làm<input id="reps-${mode}-${wk}-${ei}" data-e="${k}" data-f="reps" inputmode="decimal" placeholder="vd: 12, 10, 9" value="${esc(L.reps[k]||"")}" autocomplete="off"></label>
+          <label for="kg-${mode}-${wk}-${ei}">Tạ (kg)<input id="kg-${mode}-${wk}-${ei}" data-e="${k}" data-f="kg" inputmode="decimal" placeholder="—" value="${esc(L.kg[k]||"")}" autocomplete="off"></label>
         </div>
         <p class="cue">${note?`<b>${esc(note)}.</b> `:""}${esc(e.tip)}</p>
         <details class="howto" id="how-${mode}-${wk}-${ei}">
           <summary>Hướng dẫn chi tiết</summary>
-          <div class="body">
-            ${MORE[id]?`<p class="cue"><b>Cơ chính:</b> ${esc(MORE[id][0])}</p>`:""}
-            <ol>${e.how.map(h=>`<li>${esc(h)}</li>`).join("")}</ol>
-            ${MORE[id]&&MORE[id][1]?`<p class="cue"><b>Lỗi hay gặp:</b> ${esc(MORE[id][1])}</p>`:""}
-            ${MORE[id]&&MORE[id][2]!==""?`<p class="cue"><b>Thở:</b> ${esc(MORE[id][2]||"thở ra khi dùng sức, hít vào khi hạ về.")}</p>`:""}
-          </div>
+          <div class="body">${howHTML(id)}</div>
         </details>
         <a class="link" href="${yt(e.yt)}" target="_blank" rel="noopener">Xem video mẫu ↗</a>
       </article>`}).join("")}
+    <button type="button" class="add" id="add-bottom">＋ Thêm bài vào buổi này</button>
     <article class="ex">
       <h3>Buổi hôm nay thế nào?</h3>
       <div class="chips">${FEELS.map((f,i)=>`<button class="chip" id="feel-${i}" data-feel="${f}" aria-pressed="${L.feel===f}">${f}</button>`).join("")}</div>
@@ -709,23 +839,26 @@ function renderSession(){
       <p class="cue" id="save-status">${col?"Tự lưu trên điện thoại khi anh ghi.":"Tự lưu trên máy này khi anh ghi."}</p>
     </article>
     <button class="reset" id="reset">Xoá ghi chép buổi này</button>`;
+  document.getElementById("edit-on").onclick=()=>{editing=true;renderSession()};
+  el.querySelector("[data-sched-go]").onclick=openSched;
+  document.getElementById("add-top").onclick=document.getElementById("add-bottom").onclick=()=>openPicker(wk);
   el.querySelectorAll(".set").forEach(b=>b.onclick=()=>{
-    const Lx=ensure(wk),k="e"+b.dataset.e,n=+b.dataset.n,s=+b.dataset.s;
+    const Lx=ensure(wk),k=b.dataset.e,n=+b.dataset.n,s=+b.dataset.s;
     const arr=(Lx.sets[k]||[]).slice();while(arr.length<n)arr.push(false);
     arr[s]=!arr[s];Lx.sets[k]=arr;
     b.classList.toggle("on",arr[s]);b.setAttribute("aria-pressed",arr[s]);
-    document.getElementById("prog").textContent=Object.values(Lx.sets).reduce((a,x)=>a+x.filter(Boolean).length,0)+"/"+total+" hiệp";
+    document.getElementById("prog").textContent=countDone(Lx)+"/"+total+" hiệp";
     commit(wk);
     if(arr[s]) startTimer(mode==="gym"?90:60);
   });
   el.querySelectorAll(".logrow input").forEach(inp=>inp.oninput=()=>{
-    const Lx=ensure(wk);Lx[inp.dataset.f]["e"+inp.dataset.e]=inp.value.trim();commit(wk);
+    const Lx=ensure(wk);Lx[inp.dataset.f][inp.dataset.e]=inp.value.trim();commit(wk);
   });
   const ta=el.querySelector("textarea");
   ta.oninput=()=>{ensure(wk).note=ta.value;commit(wk)};
-  el.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+  el.querySelectorAll("[data-feel]").forEach(c=>c.onclick=()=>{
     const Lx=ensure(wk);Lx.feel=Lx.feel===c.dataset.feel?"":c.dataset.feel;
-    el.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x.dataset.feel===Lx.feel));
+    el.querySelectorAll("[data-feel]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.feel===Lx.feel));
     commit(wk);
   });
   const rs=document.getElementById("reset");
@@ -736,8 +869,158 @@ function renderSession(){
   };
 }
 
+/* edit mode: reorder, remove, change sets/reps/note of the user's list */
+function renderEditor(el,day,wk){
+  const list=getList(mode,wk);
+  el.innerHTML=`
+    <div class="session-head"><h2>Sửa bài · ${FULL[day]}</h2></div>
+    <p class="muted" style="margin-top:-6px">Đổi thứ tự bằng ↑ ↓, xoá bằng ✕, sửa số hiệp và số lần. Thay đổi tự lưu và dùng cho mọi tuần sau.</p>
+    <div class="chips"><button type="button" class="primary" id="edit-off">✓ Xong</button></div>
+    ${list.length?"":`<div class="rest"><b>Chưa có bài nào</b><p class="muted">Bấm nút bên dưới để thêm bài.</p></div>`}
+    ${list.map(({id,sets,reps,note},i)=>{const e=EX[id];return `
+      <article class="ex">
+        <div class="ex-top">
+          <div><div class="ex-name">${i+1}. ${esc(e.n)}</div><div class="ex-en">${esc(MORE[id]?MORE[id][0]:e.en)}</div></div>
+          <div class="ed-ctl">
+            <button type="button" class="icon" data-mv="-1" data-i="${i}" aria-label="Đưa ${esc(e.n)} lên trên"${i?"":" disabled"}>↑</button>
+            <button type="button" class="icon" data-mv="1" data-i="${i}" aria-label="Đưa ${esc(e.n)} xuống dưới"${i<list.length-1?"":" disabled"}>↓</button>
+            <button type="button" class="icon del" data-rm="${i}" aria-label="Xoá ${esc(e.n)}">✕</button>
+          </div>
+        </div>
+        <div class="logrow rev">
+          <label for="ed-sets-${i}">Số hiệp<input id="ed-sets-${i}" data-i="${i}" data-f="sets" type="number" inputmode="numeric" min="1" max="10" value="${sets}" autocomplete="off"></label>
+          <label for="ed-reps-${i}">Số lần mỗi hiệp<input id="ed-reps-${i}" data-i="${i}" data-f="reps" placeholder="vd: 12, 8–10, 45s" value="${esc(reps)}" autocomplete="off"></label>
+        </div>
+        <div class="logrow one"><label for="ed-note-${i}">Ghi chú cho bài<input id="ed-note-${i}" data-i="${i}" data-f="note" placeholder="vd: tạ 7kg, mỗi chân" value="${esc(note)}" autocomplete="off"></label></div>
+      </article>`}).join("")}
+    <button type="button" class="add" id="add-bottom">＋ Thêm bài vào buổi này</button>
+    ${isCustom(mode,wk)?`<button class="reset" id="to-tpl">Trả buổi này về như bài mẫu</button>`:""}`;
+  document.getElementById("edit-off").onclick=()=>{editing=false;renderSession();renderWeek()};
+  document.getElementById("add-bottom").onclick=()=>openPicker(wk);
+  el.querySelectorAll("[data-mv]").forEach(b=>b.onclick=()=>{
+    const l=getList(mode,wk),i=+b.dataset.i,j=i+ +b.dataset.mv;
+    [l[i],l[j]]=[l[j],l[i]];setList(mode,wk,l);renderSession();
+    const again=el.querySelector(`[data-mv="${b.dataset.mv}"][data-i="${j}"]`);if(again&&!again.disabled)again.focus();
+  });
+  el.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{const l=getList(mode,wk);l.splice(+b.dataset.rm,1);setList(mode,wk,l);renderSession()});
+  el.querySelectorAll("input[data-f]").forEach(inp=>inp.oninput=()=>{
+    const l=getList(mode,wk),x=l[+inp.dataset.i];
+    if(inp.dataset.f==="sets"){const n=parseInt(inp.value,10);if(!(n>=1&&n<=10))return;x.sets=n}
+    else x[inp.dataset.f]=inp.value.trim();
+    setList(mode,wk,l);
+  });
+  const back=document.getElementById("to-tpl");
+  if(back) back.onclick=()=>{
+    if(back.dataset.armed){resetList(mode,wk);renderSession();return}
+    back.dataset.armed="1";back.textContent="Bấm lần nữa để trả về bài mẫu";
+    setTimeout(()=>{if(back.isConnected){delete back.dataset.armed;back.textContent="Trả buổi này về như bài mẫu"}},4000);
+  };
+}
+
+/* template tab: the original plan, read-only, with a way to copy exercises into the user's list */
+function renderTemplate(el,day,wk){
+  const w=PLAN[mode][wk], mine=new Set(getList(mode,wk).map(x=>x.id)), custom=isCustom(mode,wk);
+  el.innerHTML=`
+    <div class="session-head"><h2>Bài mẫu · ${FULL[day]} · ${w.t}</h2></div>
+    <p class="muted" style="margin-top:-6px">${w.s}. Đây là giáo án gợi ý, chỉ để xem. Anh tập và ghi nhật ký ở tab Bài của anh.</p>
+    ${custom?`<p class="cue banner">Buổi của anh đang khác bài mẫu. Bấm "Thêm" để lấy từng bài, hoặc dùng nút cuối trang để lấy lại cả buổi.</p>`:`<p class="cue banner">Buổi của anh đang giống hệt bài mẫu này.</p>`}
+    ${tplList(mode,wk).map(({id,sets,reps,note},ei)=>{const e=EX[id];return `
+      <article class="ex${e.key?" key":""}">
+        <div class="ex-top">
+          <div><div class="ex-name">${esc(e.n)}</div><div class="ex-en">${esc(e.en)}</div>${e.key?'<span class="tag">Quan trọng cho dáng chữ V</span>':""}</div>
+          <div class="dose">${esc(doseText(sets,reps))}</div>
+        </div>
+        <p class="cue">${note?`<b>${esc(note)}.</b> `:""}${MORE[id]?"Cơ chính: "+esc(MORE[id][0])+".":""}</p>
+        <details class="howto" id="tpl-how-${mode}-${wk}-${ei}"><summary>Hướng dẫn chi tiết</summary><div class="body">${howHTML(id)}</div></details>
+        <div class="chips">
+          ${mine.has(id)?`<span class="chip" aria-disabled="true">✓ Đã có trong buổi của anh</span>`:`<button type="button" class="chip" data-take="${ei}">＋ Thêm vào buổi của anh</button>`}
+          <a class="link" style="align-self:center" href="${yt(e.yt)}" target="_blank" rel="noopener">Xem video mẫu ↗</a>
+        </div>
+      </article>`}).join("")}
+    ${custom?`<button class="reset" id="use-tpl">Dùng lại toàn bộ bài mẫu cho buổi ${FULL[day]}</button>`:""}`;
+  el.querySelectorAll("[data-take]").forEach(b=>b.onclick=()=>{
+    const t=tplList(mode,wk)[+b.dataset.take],l=getList(mode,wk);
+    l.push(Object.assign(t,{k:newKey()}));setList(mode,wk,l);renderSession();renderWeek();
+  });
+  const use=document.getElementById("use-tpl");
+  if(use) use.onclick=()=>{
+    if(use.dataset.armed){resetList(mode,wk);renderSession();renderWeek();return}
+    use.dataset.armed="1";use.textContent="Bấm lần nữa: danh sách bài của anh cho buổi này sẽ thay bằng bài mẫu";
+    setTimeout(()=>{if(use.isConnected){delete use.dataset.armed;use.textContent="Dùng lại toàn bộ bài mẫu cho buổi "+FULL[day]}},4000);
+  };
+}
+
+/* exercise picker: every exercise with its main muscles and default dose; pick several, adjust, add */
+const picker=document.getElementById("picker"),pickList=document.getElementById("picker-list"),pickAdd=document.getElementById("picker-add"),pickQ=document.getElementById("picker-q");
+let pickWk=null,pickSel=new Map(),pickGroup="",pickOpenHow=new Set(),pickReturn=null;
+const fold=s=>String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").replace(/Đ/g,"d").toLowerCase();
+function openPicker(wk){
+  pickWk=wk;pickSel=new Map();pickGroup="";pickOpenHow=new Set();pickQ.value="";pickReturn=document.activeElement;
+  document.getElementById("picker-title").textContent="Thêm bài · "+PLAN[mode][wk].t;
+  renderPickGroups();renderPickList();
+  picker.hidden=false;document.body.style.overflow="hidden";pickList.scrollTop=0;
+  document.getElementById("picker-close").focus();
+}
+function closePicker(){
+  picker.hidden=true;document.body.style.overflow="";
+  if(pickReturn&&pickReturn.isConnected)pickReturn.focus();
+}
+function renderPickGroups(){
+  const groups=[...new Set(Object.values(EX).map(e=>e.g))];
+  const box=document.getElementById("picker-groups");
+  box.innerHTML=[["","Tất cả"],...groups.map(g=>[g,g])].map(([v,t])=>`<button type="button" class="chip" role="radio" data-g="${esc(v)}" aria-checked="${pickGroup===v}" aria-pressed="${pickGroup===v}">${esc(t)}</button>`).join("");
+  box.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{pickGroup=b.dataset.g;renderPickGroups();renderPickList()});
+}
+function renderPickList(){
+  const q=fold(pickQ.value.trim()), have=new Set(getList(mode,pickWk).map(x=>x.id));
+  const ids=Object.keys(EX).filter(id=>{const e=EX[id];
+    return (!pickGroup||e.g===pickGroup)&&(!q||fold(e.n+" "+e.en+" "+(MORE[id]?MORE[id][0]:"")).includes(q))});
+  pickList.innerHTML=ids.length?ids.map(id=>{const e=EX[id],s=pickSel.get(id),d=s||defDose(id);return `
+    <div class="pick${s?" on":""}">
+      <button type="button" class="pick-row" id="pick-${id}" data-pick="${id}" aria-pressed="${!!s}">
+        <span class="box" aria-hidden="true">${s?"✓":""}</span>
+        <span class="pick-main"><span class="ex-name">${esc(e.n)} <span class="ex-en">· ${esc(e.en)}</span></span>
+          <span class="pick-info">${esc(MORE[id]?MORE[id][0]:e.g)}</span>
+          ${have.has(id)?'<span class="pick-info">✓ Đã có trong buổi này</span>':""}</span>
+        <span class="dose">${esc(doseText(d[0],d[1]))}</span>
+      </button>
+      ${s?`<div class="logrow rev">
+        <label for="pk-sets-${id}">Số hiệp<input id="pk-sets-${id}" data-id="${id}" data-f="0" type="number" inputmode="numeric" min="1" max="10" value="${s[0]}" autocomplete="off"></label>
+        <label for="pk-reps-${id}">Số lần mỗi hiệp<input id="pk-reps-${id}" data-id="${id}" data-f="1" value="${esc(s[1])}" autocomplete="off"></label>
+      </div>`:""}
+      <details class="howto" data-how="${id}"${pickOpenHow.has(id)?" open":""}><summary>Cách làm, lỗi hay gặp</summary><div class="body">${howHTML(id)}
+        <a class="link" href="${yt(e.yt)}" target="_blank" rel="noopener">Xem video mẫu ↗</a></div></details>
+    </div>`}).join(""):`<p class="cue empty">Không tìm thấy bài nào. Thử từ khoá khác hoặc chọn nhóm "Tất cả".</p>`;
+  pickList.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.pick;
+    if(pickSel.has(id))pickSel.delete(id);else pickSel.set(id,defDose(id));
+    renderPickList();document.getElementById("pick-"+id).focus();
+  });
+  pickList.querySelectorAll("input[data-id]").forEach(inp=>inp.oninput=()=>{
+    const s=pickSel.get(inp.dataset.id).slice();
+    if(inp.dataset.f==="0"){const n=parseInt(inp.value,10);if(!(n>=1&&n<=10))return;s[0]=n}else s[1]=inp.value.trim();
+    pickSel.set(inp.dataset.id,s);
+    const dose=inp.closest(".pick").querySelector(".dose");dose.textContent=doseText(s[0],s[1]);
+  });
+  pickList.querySelectorAll("[data-how]").forEach(d=>d.ontoggle=()=>{d.open?pickOpenHow.add(d.dataset.how):pickOpenHow.delete(d.dataset.how)});
+  pickAdd.disabled=!pickSel.size;
+  pickAdd.textContent=pickSel.size?"Thêm "+pickSel.size+" bài vào buổi":"Chọn bài để thêm";
+}
+pickQ.oninput=renderPickList;
+document.getElementById("picker-close").onclick=closePicker;
+pickAdd.onclick=()=>{
+  const l=getList(mode,pickWk);
+  pickSel.forEach(([sets,reps],id)=>l.push({k:newKey(),id,sets,reps:reps||"12",note:""}));
+  const n=pickSel.size;
+  setList(mode,pickWk,l);closePicker();
+  if(view!=="mine"){view="mine";store.set("view",view);renderModes()}
+  renderSession();renderWeek();
+  const cards=document.querySelectorAll("#session article.ex");
+  const first=cards[Math.max(0,l.length-n)];if(first)first.scrollIntoView({block:"center"});
+};
+
 /* ---- journal tab ---- */
-const MODE_ICON={home:"🏠 Ở nhà",park:"🌳 Công viên",gym:"🏋️ Gym"};
+const MODE_ICON={band:"🎒 Không tạ",home:"🏠 Ở nhà",park:"🌳 Công viên",gym:"🏋️ Gym"};
 function workouts(){return Object.entries(logs).filter(([id,L])=>L&&L.type==="workout"&&hasData(L)).map(([id,L])=>Object.assign({id},L)).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:(b.updatedAt||0)-(a.updatedAt||0))}
 function bodies(){return Object.values(logs).filter(L=>L&&L.type==="body").sort((a,b)=>a.date<b.date?-1:1)}
 function fmtNum(n){return String(Math.round(n*10)/10).replace(".",",")}
@@ -777,12 +1060,12 @@ function sessionBuckets(dates){
   const thisWeek=weekStart(todayKey);
   if(chartRange==="8w"){
     const out=[];for(let i=7;i>=0;i--){const d=keyToDate(thisWeek);d.setDate(d.getDate()-7*i);const k=localKey(d);out.push({label:shortDate(k),tip:"Tuần "+shortDate(k),n:dates.filter(x=>weekStart(x)===k).length})}
-    return {title:"Số buổi mỗi tuần",goal:4,buckets:out,aria:"Số buổi tập mỗi tuần, 8 tuần gần nhất"};
+    return {title:"Số buổi mỗi tuần",goal:Math.max(1,perWeek()),buckets:out,aria:"Số buổi tập mỗi tuần, 8 tuần gần nhất"};
   }
   const months=chartRange==="6m"?6:12,now=keyToDate(todayKey),out=[];
   for(let i=months-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const pre=localKey(d).slice(0,7);
     out.push({label:"T"+(d.getMonth()+1),tip:"Tháng "+(d.getMonth()+1)+"/"+d.getFullYear(),n:dates.filter(x=>x.startsWith(pre)).length})}
-  return {title:"Số buổi mỗi tháng",goal:16,buckets:out,aria:"Số buổi tập mỗi tháng, "+months+" tháng gần nhất"};
+  return {title:"Số buổi mỗi tháng",goal:Math.max(1,perWeek()*4),buckets:out,aria:"Số buổi tập mỗi tháng, "+months+" tháng gần nhất"};
 }
 function bestSeries(exId){
   const m={};workouts().forEach(L=>(L.ex||[]).forEach(x=>{if(x.id===exId&&x.best>0)m[L.date]=Math.max(m[L.date]||0,x.best)}));
@@ -801,7 +1084,7 @@ function renderLog(){
   const lastW=waist.length?waist[waist.length-1].y:null, diffW=waist.length>1?lastW-waist[0].y:null;
   box.innerHTML=`
     <div class="tiles">
-      <div><span>Tuần này</span><b>${weekCount}<small>/4 buổi</small></b></div>
+      <div><span>Tuần này</span><b>${weekCount}<small>/${perWeek()} buổi</small></b></div>
       <div><span>Tổng số buổi</span><b>${dates.length}</b></div>
       <div><span>Cân nặng</span><b>${lastKg!=null?fmtNum(lastKg)+"<small> kg</small>":"—"}</b>${diffKg!=null?`<em class="${diffKg>0?"up":""}">${diffKg<=0?"↓ "+fmtNum(-diffKg):"↑ "+fmtNum(diffKg)} kg từ lần đầu</em>`:""}</div>
       <div><span>Vòng eo</span><b>${lastW!=null?fmtNum(lastW)+"<small> cm</small>":"—"}</b>${diffW!=null?`<em class="${diffW>0?"up":""}">${diffW<=0?"↓ "+fmtNum(-diffW):"↑ "+fmtNum(diffW)} cm từ lần đầu</em>`:""}</div>
@@ -854,12 +1137,35 @@ document.addEventListener("pointerover",e=>{const t=e.target.closest&&e.target.c
 document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest("[data-tip]");if(t)showTip(t.dataset.tip,e.clientX,e.clientY);else tip.hidden=true});
 document.addEventListener("pointerout",e=>{if(e.target.closest&&e.target.closest("[data-tip]")&&e.pointerType==="mouse")tip.hidden=true});
 
+let schedEdit=false;
 function renderWeek(){
+  const rest=DAY_NAMES.filter((d,i)=>!sched[i]);
+  document.querySelectorAll(".per-week").forEach(x=>x.textContent=perWeek());
+  document.querySelectorAll(".rest-days").forEach(x=>x.textContent=rest.length?rest.join(", "):"không có");
   document.getElementById("week-mode").textContent=MODE_NAME[mode];
-  document.getElementById("weeklist").innerHTML=DAYS.map(([d,w],i)=>w
-    ?`<li><span class="d">${d}</span><div><div class="t">${PLAN[mode][w].t}</div><div class="s">${PLAN[mode][w].list.map(x=>EX[x[0]].n).join(", ")}</div></div></li>`
+  const tg=document.getElementById("sched-toggle");
+  tg.textContent=schedEdit?"✓ Xong":"📅 Chọn ngày tập";tg.className=schedEdit?"primary":"chip";
+  tg.onclick=()=>{schedEdit=!schedEdit;renderWeek()};
+  document.getElementById("sched-hint").hidden=!schedEdit;
+  const rs=document.getElementById("sched-reset");
+  rs.hidden=!schedEdit||sched.every((w,i)=>w===DEFAULT_SCHED[i]);
+  rs.onclick=()=>{sched=DEFAULT_SCHED.slice();store.set("days",sched);buildDays();editing=false;renderDays();renderSession();renderWeek();renderLog()};
+  const exs=w=>esc(getList(mode,w).map(x=>EX[x.id].n).join(", ")||"Chưa có bài nào");
+  const el=document.getElementById("weeklist");
+  el.innerHTML=DAYS.map(([d,w],i)=>schedEdit
+    ?`<li class="${w?"":"off"}"><label class="d" for="sched-${i}">${d}</label><div><select id="sched-${i}" data-i="${i}">
+        <option value=""${w?"":" selected"}>Nghỉ</option>${["A","L","B","F"].map(x=>`<option value="${x}"${x===w?" selected":""}>${esc(PLAN[mode][x].t)}</option>`).join("")}
+      </select>${w?`<div class="s" style="margin-top:4px">${exs(w)}</div>`:""}</div></li>`
+    :w
+    ?`<li><span class="d">${d}</span><div><div class="t">${PLAN[mode][w].t}${isCustom(mode,w)?' <span class="tag">đã chỉnh</span>':""}</div><div class="s">${exs(w)}</div></div></li>`
     :`<li class="off"><span class="d muted">${d}</span><div><div class="t muted">Nghỉ tập · đi chợ</div><div class="s">Mua đồ cho 2 ngày, ướp thịt và rửa rau sẵn. Đi bộ 8.000–10.000 bước.</div></div></li>`).join("");
+  el.querySelectorAll("select").forEach(sel=>sel.onchange=()=>{
+    const i=+sel.dataset.i;sched[i]=sel.value||null;store.set("days",sched);buildDays();
+    editing=false;renderDays();renderSession();renderWeek();renderLog();
+    const again=document.getElementById("sched-"+i);if(again)again.focus();
+  });
 }
+function openSched(){schedEdit=true;renderWeek();showTab("week");window.scrollTo(0,0)}
 
 function renderGuide(){
   const groups={};
@@ -901,6 +1207,9 @@ document.querySelectorAll(".timer [data-sec]").forEach(b=>b.onclick=()=>startTim
 tstop.onclick=()=>{stopTimer();clock.textContent="0:00";tlab.textContent="Nghỉ giữa hiệp";timer.classList.remove("ring")};
 
 renderAll();renderGuide();initBodyForm();renderLog();
+const isField=t=>t&&t.matches&&t.matches("input:not([type=file]),textarea");
+document.addEventListener("focusin",e=>{if(isField(e.target))document.body.classList.add("typing")});
+document.addEventListener("focusout",e=>{if(isField(e.target))document.body.classList.remove("typing")});
 /* ---- progress photos: compressed JPEGs kept in IndexedDB on this phone ---- */
 const photoDB=new Promise((res,rej)=>{
   try{const rq=indexedDB.open("chu-v",1);
@@ -979,7 +1288,7 @@ vDel.onclick=async()=>{
   if(!vDel.dataset.armed){vDel.dataset.armed="1";vDel.textContent="Bấm lần nữa để xoá";return}
   await delPhoto(photoList[viewIdx].id);viewer.hidden=true;renderPhotos();
 };
-document.addEventListener("keydown",e=>{if(viewer.hidden)return;if(e.key==="Escape")viewer.hidden=true;if(e.key==="ArrowLeft")openViewer(viewIdx-1);if(e.key==="ArrowRight")openViewer(viewIdx+1)});
+document.addEventListener("keydown",e=>{if(!picker.hidden){if(e.key==="Escape")closePicker();return}if(viewer.hidden)return;if(e.key==="Escape")viewer.hidden=true;if(e.key==="ArrowLeft")openViewer(viewIdx-1);if(e.key==="ArrowRight")openViewer(viewIdx+1)});
 document.getElementById("photo-input").onchange=async e=>{
   const files=[...e.target.files],msg=document.getElementById("photo-msg");e.target.value="";
   if(!files.length)return;
@@ -1001,7 +1310,7 @@ const dataToBlob=d=>fetch(d).then(r=>r.blob());
 document.getElementById("backup-save").onclick=async()=>{
   const msg=document.getElementById("backup-msg");msg.textContent="Đang tạo bản sao lưu…";
   let photos=[];try{photos=await Promise.all((await getPhotos()).map(async p=>({id:p.id,date:p.date,createdAt:p.createdAt,data:await blobToData(p.blob)})))}catch(e){}
-  const blob=new Blob([JSON.stringify({app:"so-tay-chu-v",version:2,savedAt:new Date().toISOString(),logs,photos})],{type:"application/json"});
+  const blob=new Blob([JSON.stringify({app:"so-tay-chu-v",version:3,savedAt:new Date().toISOString(),logs,plans,days:sched,photos})],{type:"application/json"});
   const url=URL.createObjectURL(blob),link=document.createElement("a");
   link.href=url;link.download="so-tay-chu-v-"+todayKey+".json";document.body.appendChild(link);link.click();link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),10000);
@@ -1014,14 +1323,20 @@ document.getElementById("backup-file").onchange=e=>{
     const data=JSON.parse(r.result);
     if(!data||data.app!=="so-tay-chu-v"||typeof data.logs!=="object") throw 0;
     let n=0;Object.entries(data.logs).forEach(([id,L])=>{const cur=logs[id];if(!cur||(L.updatedAt||0)>(cur.updatedAt||0)){logs[id]=L;n++}});
-    store.set("logs",logs);renderLog();renderSession();initBodyForm();
+    store.set("logs",logs);
+    let pn=0;
+    if(data.plans&&typeof data.plans==="object")Object.entries(data.plans).forEach(([m,days])=>{if(!PLAN[m]||!days)return;
+      Object.entries(days).forEach(([wk,l])=>{if(PLAN[m][wk]&&Array.isArray(l)){(plans[m]=plans[m]||{})[wk]=l.filter(x=>x&&EX[x.id]);pn++}})});
+    store.set("plans",plans);
+    if(Array.isArray(data.days)&&data.days.length===7){sched=data.days.map(w=>["A","L","B","F"].includes(w)?w:null);store.set("days",sched);buildDays();renderDays()}
+    renderLog();renderSession();renderWeek();initBodyForm();
     let m=0;
     if(Array.isArray(data.photos)){
       const have=new Set((await getPhotos()).map(p=>p.id));
       for(const p of data.photos){if(have.has(p.id)||!p.data)continue;try{await putPhoto({id:p.id,date:p.date,createdAt:p.createdAt,blob:await dataToBlob(p.data)});m++}catch(err){}}
       renderPhotos();
     }
-    msg.textContent="Đã khôi phục "+n+" mục nhật ký và "+m+" ảnh.";
+    msg.textContent="Đã khôi phục "+n+" mục nhật ký, "+m+" ảnh"+(pn?" và "+pn+" buổi bài anh tự chỉnh":"")+".";
   }catch(err){msg.textContent="Tệp này không phải bản sao lưu của Sổ tay chữ V. Hãy chọn tệp .json đã tải trước đó."}
   e.target.value="";};
   r.readAsText(f);

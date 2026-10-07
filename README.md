@@ -1,11 +1,12 @@
 # Sổ tay chữ V
 
-Ứng dụng web (PWA) theo dõi lịch tập 4 buổi/tuần cho dáng chữ V: vai rộng, lưng xô, eo gọn.
+Ứng dụng web (PWA) theo dõi lịch tập (mặc định 4 buổi/tuần, tự chọn được ngày tập) cho dáng chữ V: vai rộng, lưng xô, eo gọn.
 
 **Mở app:** https://hoanggiacuong.github.io/TapLuyen/
 
 ## Tính năng
-- Lịch tập theo 3 chế độ: ở nhà (tạ đơn), công viên (xà đơn, xà kép), phòng gym
+- Lịch tập theo 4 chế độ: không tạ (dây chun, balo), ở nhà (tạ đơn), công viên (xà đơn), phòng gym
+- Tự chỉnh buổi tập: thêm, xoá, đổi thứ tự bài, sửa số hiệp và số lần. Giáo án gốc vẫn xem được ở tab Bài mẫu
 - Đánh dấu từng hiệp, ghi số lần và mức tạ, đồng hồ nghỉ giữa hiệp
 - Nhật ký buổi tập và biểu đồ: số buổi mỗi tuần, cân nặng, vòng eo, kéo xà, hít đất
 - Hướng dẫn động tác kèm video mẫu
