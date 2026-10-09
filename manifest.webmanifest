@@ -1,7 +1,7 @@
 {
-  "name": "Sổ tay chữ V",
-  "short_name": "Chữ V",
-  "description": "Lịch tập, nhật ký và thực đơn cho dáng chữ V",
+  "name": "Sổ tay tập luyện",
+  "short_name": "Tập luyện",
+  "description": "Lịch tập, nhật ký, ăn uống và giấc ngủ cho người tập luyện",
   "lang": "vi",
   "start_url": "./",
   "scope": "./",

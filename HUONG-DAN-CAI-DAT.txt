@@ -1,0 +1,87 @@
+HƯỚNG DẪN CÀI "SỔ TAY TẬP LUYỆN" LÊN ĐIỆN THOẠI
+================================================
+
+Link app: https://hoanggiacuong.github.io/TapLuyen/
+
+App chạy trên trình duyệt nhưng cài được ra màn hình chính như một ứng dụng
+bình thường: có biểu tượng riêng, mở toàn màn hình, dùng được cả khi không
+có mạng. Không cần tải từ App Store hay CH Play.
+
+
+------------------------------------------------
+1. IPHONE / IPAD
+------------------------------------------------
+
+Lưu ý: phải dùng trình duyệt SAFARI. Chrome, Cốc Cốc hay Zalo trên iPhone
+không cài được.
+
+  B1. Mở Safari, vào link: https://hoanggiacuong.github.io/TapLuyen/
+      (Nếu bấm link trong Zalo/Messenger, chọn "Mở bằng Safari" hoặc copy
+      link dán vào Safari.)
+
+  B2. Bấm nút Chia sẻ: hình ô vuông có mũi tên chỉ lên.
+      - iPhone: nằm ở thanh dưới cùng, chính giữa.
+      - iPad: nằm ở góc trên bên phải.
+
+  B3. Kéo danh sách xuống, chọn "Thêm vào MH chính"
+      (tiếng Anh: "Add to Home Screen").
+      Không thấy thì kéo xuống cuối, bấm "Sửa tác vụ" để thêm vào.
+
+  B4. Bấm "Thêm" ở góc trên bên phải.
+
+  B5. Ra màn hình chính, mở app bằng biểu tượng "Tập luyện" vừa tạo.
+
+Lưu ý riêng cho iPhone:
+  - Dữ liệu trong app cài ở màn hình chính và dữ liệu khi mở bằng Safari là
+    HAI NƠI RIÊNG. Sau khi cài, hãy luôn mở bằng biểu tượng ở màn hình chính.
+  - Nếu trước đó đã ghi nhật ký trong Safari: vào tab Nhật ký trong Safari,
+    bấm "Tải bản sao lưu", rồi mở app ở màn hình chính, bấm
+    "Khôi phục từ tệp" và chọn tệp vừa tải.
+
+
+------------------------------------------------
+2. ANDROID (Samsung, Xiaomi, Oppo, Vivo...)
+------------------------------------------------
+
+Nên dùng trình duyệt CHROME.
+
+  B1. Mở Chrome, vào link: https://hoanggiacuong.github.io/TapLuyen/
+
+  B2. Nếu hiện thông báo "Cài đặt ứng dụng" hoặc "Thêm vào màn hình chính"
+      ở dưới màn hình: bấm vào đó, rồi bấm "Cài đặt". Xong.
+
+  B3. Nếu không hiện thông báo: bấm nút 3 chấm ⋮ ở góc trên bên phải, chọn
+      "Cài đặt ứng dụng" hoặc "Thêm vào màn hình chính".
+
+  B4. Bấm "Cài đặt" (hoặc "Thêm"). Biểu tượng "Tập luyện" sẽ xuất hiện ở
+      màn hình chính hoặc trong danh sách ứng dụng.
+
+Dùng trình duyệt Samsung Internet: bấm nút ☰ ở dưới cùng, chọn
+"Thêm trang vào" > "Màn hình chính".
+
+
+------------------------------------------------
+3. ĐIỀU CẦN BIẾT KHI DÙNG
+------------------------------------------------
+
+  * Dữ liệu (nhật ký tập, ăn uống, số đo, ảnh, giấc ngủ) chỉ lưu trên chính
+    điện thoại của bạn, không gửi lên mạng, người khác không xem được.
+
+  * Vì vậy, nên SAO LƯU định kỳ (khoảng 1–2 tuần một lần):
+      Tab Nhật ký > kéo xuống cuối > "Tải bản sao lưu".
+    Gửi tệp đó vào Zalo của chính mình, Google Drive hoặc iCloud để giữ.
+    Khi đổi điện thoại hoặc lỡ xoá app: cài lại, rồi bấm
+    "Khôi phục từ tệp" và chọn tệp sao lưu.
+
+  * Xoá app khỏi màn hình chính, hoặc xoá dữ liệu/lịch sử của trình duyệt,
+    có thể làm MẤT DỮ LIỆU nếu chưa sao lưu.
+
+  * Cập nhật: app tự lấy bản mới mỗi khi mở lúc có mạng. Nếu chưa thấy tính
+    năng mới, đóng hẳn app rồi mở lại.
+
+  * Lần đầu dùng: vào tab "Ăn uống" > "Tính TDEE", nhập tuổi, cân nặng,
+    chiều cao để app tính lượng calo và đạm cần ăn. Ở tab "Tập", chọn
+    giáo án nam hoặc nữ và chế độ tập (không tạ, ở nhà, công viên, gym).
+
+  * Các con số calo, % mỡ, thời gian đạt mục tiêu là ước tính để tham khảo.
+    Có bệnh lý hoặc đang mang thai thì hỏi bác sĩ trước khi ăn kiêng.
