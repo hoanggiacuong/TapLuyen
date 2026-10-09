@@ -10,6 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Tập luyện">
+<script>try{var t=JSON.parse(localStorage.getItem("theme"));if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -77,6 +78,22 @@ p{margin:0}
 
 .ex{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
 .ex.key{border-left:4px solid var(--accent)}
+/* finished exercise: green card and a tick after the name */
+.ex.ex-done{border-color:var(--done);background:color-mix(in srgb,var(--done) 7%,var(--surface))}
+.ex.ex-done.key{border-left-color:var(--done)}
+.ex.ex-done .ex-name::after{content:" ✓";color:var(--done);display:inline-block}
+@media (prefers-reduced-motion:no-preference){.ex.pop{animation:pop .5s ease-out}.ex.pop .ex-name::after{animation:tick .5s ease-out}}
+@keyframes pop{35%{transform:scale(1.015)}}
+@keyframes tick{0%{transform:scale(0)}60%{transform:scale(1.5)}}
+#toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:45;width:min(420px,calc(100vw - 32px));background:var(--ink);color:var(--surface);border-radius:12px;padding:12px 14px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);line-height:1.4}
+#toast[hidden]{display:none}
+#toast small{display:block;font-weight:500;opacity:.8;margin-top:2px}
+@media (prefers-reduced-motion:no-preference){#toast:not([hidden]){animation:drop .35s ease-out}}
+@keyframes drop{from{transform:translate(-50%,-20px);opacity:0}}
+#confetti{position:fixed;inset:0;z-index:44;pointer-events:none}
+.tiles .wide{grid-column:1/-1}
+.pr-list li{display:flex;justify-content:space-between;gap:8px}
+.pr-list li span:last-child{text-align:right}
 .prog{font-size:13px;background:var(--bg);border-radius:8px;padding:8px 10px;line-height:1.5}
 .prog b{color:var(--accent)}
 .ex-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
@@ -205,8 +222,23 @@ button.food.added .kc{color:var(--done)}
 .qty input{width:64px;padding:6px 8px;text-align:right;background:var(--surface);font-variant-numeric:tabular-nums}
 .logrow.two{grid-template-columns:1fr 1fr}
 .meter{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:6px}
-.meter i{display:block;height:100%;background:var(--done);border-radius:inherit}
+.meter i{display:block;height:100%;background:color-mix(in srgb,var(--done) 45%,var(--line));border-radius:inherit;transition:width .8s cubic-bezier(.2,.8,.2,1),background-color .4s}
+.meter.hit i{background:var(--done)}
 .meter.over i{background:var(--accent)}
+.meter-row{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+.meter-row .meter{margin:0}
+.meter-row b{color:var(--ink);font-variant-numeric:tabular-nums}
+.meter-row .ok{color:var(--done)}
+@media (prefers-reduced-motion:no-preference){.meter-row.got .ok{display:inline-block;animation:tick .6s ease-out}}
+@media (prefers-reduced-motion:reduce){.meter i{transition:none}}
+header{position:relative}
+#theme-btn{position:absolute;top:0;right:0;font-size:17px}
+.wsum{display:flex;flex-direction:column;gap:6px}
+.wsum ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.wsum li{display:flex;justify-content:space-between;gap:10px}
+.wsum li>span:first-child{white-space:nowrap}
+.wsum li>span:last-child{text-align:right}
+.wsum .wtip{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:14px}
 .eat-big{display:flex;justify-content:space-between;align-items:baseline;gap:4px 10px;flex-wrap:wrap}
 .eat-big b{font:800 28px var(--display);font-variant-numeric:tabular-nums}
 select{font:600 16px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
@@ -238,7 +270,20 @@ details{background:var(--surface);border:1px solid var(--line);border-radius:10p
 summary{padding:12px 14px;cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
 summary::-webkit-details-marker{display:none}
 summary::after{content:"+";color:var(--muted);font-weight:700}
-details[open] summary::after{content:"−"}
+details[open]>summary::after{content:"−"}
+/* TDEE card folds into one line showing the current target, so the food diary is right there */
+.tdee-box{margin:18px 0 0;background:transparent;border:none;border-radius:0}
+.tdee-box>summary{background:var(--surface);border:1px solid var(--line);border-radius:12px;align-items:center}
+.tdee-box[open]>summary{background:transparent;border-color:transparent;padding-inline:0}
+.tdee-box>summary>span:first-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tb-t{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.1}
+.tdee-box:not([open]) .tb-t{font-size:20px}
+.tb-s{font-size:13px;font-weight:500;color:var(--muted)}
+.tdee-box[open] .tb-s{display:none}
+.tdee-box>summary::after{content:"Sửa ▾";font-size:13px;color:var(--accent);white-space:nowrap}
+.tdee-box[open]>summary::after{content:"Thu gọn ▴"}
+.tdee-box>form{margin-top:4px}
+#adjust:not(:empty){margin-top:10px}
 details .body{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px}
 .howto{background:var(--bg)}
 .howto summary{font-size:13px;padding:9px 12px}
@@ -269,6 +314,7 @@ td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums
 .timer button.stop{background:var(--accent);color:var(--accent-ink)}
 .timer.ring .clock{color:var(--accent)}
 .timer.run [data-sec]{display:none}
+@media (max-width:389px){.timer .in{gap:6px}.timer .clock{min-width:60px;font-size:27px}.timer button{padding:9px 8px}#t180{display:none}}
 /* hide the rest-timer bar while typing so it cannot cover the field above the keyboard */
 body.typing .timer,body.kb .timer{display:none}
 .hist.hit{border-color:var(--done)}
@@ -335,10 +381,12 @@ textarea{resize:vertical}
 <body>
 <div class="wrap">
   <header>
+    <button type="button" class="icon" id="theme-btn"></button>
     <div class="eyebrow">Sổ tay tập luyện</div>
     <h1 id="hero">Eo gọn, vai rộng.<br><span>Dáng chữ V.</span></h1>
     <div class="stats">
       <span><b><span class="per-week">4</span> buổi</b> mỗi tuần</span>
+      <span id="hero-streak"></span>
       <span id="hero-goal"></span>
     </div>
   </header>
@@ -515,7 +563,8 @@ textarea{resize:vertical}
 
   <!-- FOOD -->
   <section class="section" id="p-food" role="tabpanel" hidden>
-    <h2>Tính TDEE</h2>
+    <details class="tdee-box" id="tdee-box">
+    <summary><span><span class="tb-t">Tính TDEE</span><span class="tb-s" id="tdee-sum"></span></span></summary>
     <form class="ex" id="tdee-form" onsubmit="return false">
       <p class="cue">TDEE là số calo cơ thể đốt mỗi ngày. Ăn bằng TDEE thì giữ cân, ăn ít hơn thì giảm, ăn nhiều hơn thì tăng. Cứ chênh khoảng 7.700 kcal là 1 kg.</p>
       <div class="seg two" role="radiogroup" aria-label="Giới tính">
@@ -592,6 +641,8 @@ textarea{resize:vertical}
         <p class="cue">Mọi con số là điểm xuất phát. Theo dõi cân, eo, sức tập 2–3 tuần rồi chỉnh là cách chính xác nhất.</p>
       </div></details>
     </form>
+    </details>
+    <div id="adjust"></div>
     <h2 id="eat-title">Hôm nay đã ăn</h2>
     <div class="ex" id="eat">
       <div class="eat-date">
@@ -622,6 +673,7 @@ textarea{resize:vertical}
         </div>
       </details>
       <h3>Đã ăn</h3>
+      <div id="eat-copy"></div>
       <div class="eat-list" id="eat-today"></div>
     </div>
     <h2 id="need-title">Mỗi ngày cần</h2>
@@ -699,6 +751,8 @@ textarea{resize:vertical}
     <button type="button" id="viewer-next">Sau ›</button>
   </div>
 </div>
+<div id="toast" hidden role="status" aria-live="polite"></div>
+<canvas id="confetti" hidden aria-hidden="true"></canvas>
 <div id="cal" class="cal-wrap" hidden role="dialog" aria-modal="true" aria-labelledby="cal-title">
   <div class="cal-card">
     <div class="cal-head"><button type="button" class="icon" id="cal-prev" aria-label="Tháng trước">‹</button><b id="cal-title"></b><button type="button" class="icon" id="cal-next" aria-label="Tháng sau">›</button></div>
@@ -719,6 +773,7 @@ textarea{resize:vertical}
   <div class="in">
     <div class="clock" id="clock">0:00</div>
     <div class="lab" id="tlab">Nghỉ giữa hiệp</div>
+    <button id="tsound" type="button">🔔</button>
     <button data-sec="60" id="t60">60s</button>
     <button data-sec="90" id="t90">90s</button>
     <button data-sec="120" id="t120">2′</button>
@@ -1148,7 +1203,7 @@ function progress(id,sets,reps){
 }
 function summarize(L){
   L.title=PLAN[L.mode][L.wk].t;
-  L.ex=getList(L.mode,L.wk).map(({k,id,sets})=>({id,n:EX[id].n,total:sets,done:(L.sets[k]||[]).filter(Boolean).length,reps:L.reps[k]||"",kg:L.kg[k]||"",best:maxNum(L.reps[k])}));
+  L.ex=getList(L.mode,L.wk).map(({k,id,sets})=>({id,n:EX[id].n,total:isDeload(L.date)?dlSets(sets):sets,done:(L.sets[k]||[]).filter(Boolean).length,reps:L.reps[k]||"",kg:L.kg[k]||"",best:maxNum(L.reps[k])}));
   L.done=L.ex.reduce((a,x)=>a+x.done,0);L.total=L.ex.reduce((a,x)=>a+x.total,0);
   L.updatedAt=Date.now();
 }
@@ -1156,8 +1211,82 @@ function commit(wk){
   const id=wid(wk),L=logs[id];
   if(!L) return;
   if(!hasData(L)) removeDoc(id); else {summarize(L);saveDoc(id)}
+  renderStreak();
 }
 function ensure(wk){const id=wid(wk);if(!logs[id])logs[id]=blank(wk);return logs[id]}
+
+/* ---- deload week: after a long run of training weeks, or when sessions keep feeling too hard,
+   one lighter week (about 60% of the sets, same weights) lets joints and fatigue recover (Bell 2023: coaches deload every 4–8 weeks) */
+let deloads=(x=>Array.isArray(x)?x:[])(store.get("deloads",[])), deloadSkip=store.get("deloadSkip",null);
+const isDeload=date=>deloads.includes(weekStart(date));
+const dlSets=n=>Math.max(1,Math.round(n*0.6));
+function deloadAdvice(){
+  const wk=weekStart(logDate);if(isDeload(logDate)||deloadSkip===wk)return null;
+  const ws=workouts(), has=new Set(ws.filter(w=>w.done>0).map(w=>weekStart(w.date)));
+  let n=0,k=shiftDay(wk,-7);while(has.has(k)&&!deloads.includes(k)){n++;k=shiftDay(k,-7)}
+  const last=ws.filter(w=>w.feel&&w.date<=logDate).slice(0,4), hard=last.filter(w=>w.feel==="Quá sức").length, heavy=last.filter(w=>w.feel==="Nặng"||w.feel==="Quá sức").length;
+  if(hard>=2||heavy>=3) return `${heavy} trong ${last.length} buổi gần nhất anh ghi là nặng hoặc quá sức.`;
+  if(n>=6) return `Anh đã tập ${n} tuần liền chưa có tuần nhẹ nào.`;
+  return null;
+}
+function setDeload(on){const wk=weekStart(logDate);deloads=deloads.filter(x=>x!==wk);if(on)deloads.push(wk);else deloadSkip=wk;
+  store.set("deloads",deloads);store.set("deloadSkip",deloadSkip);
+  Object.keys(logs).forEach(id=>{const L=logs[id];if(L&&L.type==="workout"&&weekStart(L.date)===wk&&L.ex){summarize(L);saveDoc(id)}});
+  renderSession()}
+
+/* ---- weekly streak: consecutive weeks that reached the planned number of sessions; the running week only adds, never breaks */
+function streak(){
+  const goal=Math.max(1,perWeek()), per={};
+  workouts().filter(w=>w.done>0).forEach(w=>{const k=weekStart(w.date);(per[k]=per[k]||new Set()).add(w.date)});
+  const cnt=k=>per[k]?per[k].size:0, cur=weekStart(todayKey);
+  let n=0, k=cnt(cur)>=goal?cur:shiftDay(cur,-7);
+  while(cnt(k)>=goal){n++;k=shiftDay(k,-7)}
+  return {n,goal,now:cnt(cur)};
+}
+function renderStreak(){
+  const st=streak(), el=document.getElementById("hero-streak");
+  el.innerHTML=st.n?`🔥 <b>${st.n} tuần</b> liền đủ buổi`:`Tuần này <b>${st.now}/${st.goal}</b> buổi`;
+}
+
+/* ---- personal records: heavier weight, or more reps at the same weight, than every earlier session */
+const NO_PR=["cardio","walkh"];
+function perfOf(x){const r=nums(x.reps);if(!r.length||NO_PR.includes(x.id))return null;const kg=nums(x.kg);return {kg:kg.length?Math.max(...kg):0,reps:Math.max(...r)}}
+const beats=(a,b)=>a.kg>b.kg||(a.kg===b.kg&&a.reps>b.reps);
+const prUnit=id=>["plank","climber"].includes(id)?"giây":"lần";
+const prText=(id,p)=>(p.kg?fmtNum(p.kg)+" kg × ":"")+fmtNum(p.reps)+" "+prUnit(id);
+function records(){
+  const best={}, prs={};
+  workouts().slice().reverse().forEach(L=>(L.ex||[]).forEach(x=>{const p=perfOf(x);if(!p)return;const b=best[x.id];
+    if(!b||beats(p,b)){if(b)(prs[L.id]=prs[L.id]||{})[x.id]=b;best[x.id]=Object.assign({date:L.date,n:x.n},p)}}));
+  return {best,prs};
+}
+let prShown=new Set();
+function checkPR(wk,k){
+  const id=wid(wk), L=logs[id];if(!L||!L.ex)return;
+  const it=getList(mode,wk).find(x=>x.k===k);if(!it)return;
+  const old=(records().prs[id]||{})[it.id];if(!old)return;
+  const p=perfOf((L.ex||[]).find(x=>x.id===it.id)||{}), sig=id+it.id+JSON.stringify(p);
+  if(!p||prShown.has(sig))return;prShown.add(sig);
+  toast(`🏆 Kỷ lục mới: ${esc(EX[it.id].n)} ${prText(it.id,p)}`,`Kỷ lục cũ ${prText(it.id,old)} (${shortDate(old.date)})`);
+  confetti(60);
+}
+
+/* ---- toast + confetti */
+let toastT=0;
+function toast(html,sub){const t=document.getElementById("toast");t.innerHTML=html+(sub?`<small>${sub}</small>`:"");t.hidden=false;
+  clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,4200);t.onclick=()=>t.hidden=true}
+function confetti(n){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const c=document.getElementById("confetti"),x=c.getContext&&c.getContext("2d");if(!x)return;
+  c.hidden=false;c.width=innerWidth*devicePixelRatio;c.height=innerHeight*devicePixelRatio;x.scale(devicePixelRatio,devicePixelRatio);
+  const col=["#d9480f","#2b8a3e","#f59f00","#1c7ed6","#ae3ec9"];
+  const ps=Array.from({length:n},()=>({x:innerWidth/2+(Math.random()-.5)*80,y:innerHeight*.35,vx:(Math.random()-.5)*12,vy:-Math.random()*12-4,
+    s:5+Math.random()*5,r:Math.random()*6,vr:(Math.random()-.5)*.4,c:col[Math.floor(Math.random()*col.length)]}));
+  const t0=performance.now();
+  (function f(t){const k=(t-t0)/1800;x.clearRect(0,0,innerWidth,innerHeight);
+    ps.forEach(p=>{p.vy+=.35;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.globalAlpha=Math.max(0,1-k);x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
+    if(k<1)requestAnimationFrame(f);else{x.setTransform(1,0,0,1,0,0);c.hidden=true}})(t0);
+}
 
 function renderModes(){
   document.querySelectorAll("#modes button").forEach(b=>{
@@ -1224,8 +1353,8 @@ function renderSession(){
   }
   if(view==="tpl") return renderTemplate(el,day,wk);
   if(editing) return renderEditor(el,day,wk);
-  const w=PLAN[mode][wk], list=getList(mode,wk);
-  const L=logs[wid(wk)]||blank(wk);
+  const w=PLAN[mode][wk], dl=isDeload(logDate), list=getList(mode,wk).map(x=>dl?Object.assign({},x,{sets:dlSets(x.sets)}):x);
+  const L=logs[wid(wk)]||blank(wk), dlWhy=deloadAdvice();
   const total=list.reduce((a,x)=>a+x.sets,0);
   const countDone=Lx=>list.reduce((a,x)=>a+(Lx.sets[x.k]||[]).filter(Boolean).length,0);
   const PG={};
@@ -1235,10 +1364,12 @@ function renderSession(){
     <div class="chips"><button type="button" class="chip" id="edit-on">✏️ Sửa danh sách bài</button><button type="button" class="chip" id="add-top">＋ Thêm bài</button><button type="button" class="chip" data-sched-go>📅 Đổi ngày tập</button></div>
     <details class="howto" id="warm-${mode}-${wk}"><summary>🔥 Khởi động 5 phút trước khi tập</summary><div class="body"><ol>${WARM[mode].map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div></details>
     ${day!==(keyToDate(logDate).getDay()+6)%7?`<p class="cue banner">Đang xem lịch ${FULL[day]}. Những gì ghi ở đây sẽ lưu vào nhật ký ngày ${fmtDate(logDate)}.</p>`:""}
+    ${dl?`<p class="cue banner">🧘 <b>Tuần giảm tải.</b> Số hiệp đã giảm còn khoảng 60%. Giữ mức tạ như lần trước, dừng khi còn sức làm thêm 3–4 lần. Tuần sau tập lại bình thường. <button type="button" class="chip" id="dl-off">Tắt</button></p>`
+      :dlWhy?`<p class="cue banner">😮‍💨 ${dlWhy} Nên có <b>1 tuần giảm tải</b>: bớt khoảng 40% số hiệp, giữ mức tạ, để cơ và khớp hồi phục. Sau đó thường khoẻ hơn. <button type="button" class="chip" id="dl-on">Bật tuần giảm tải</button> <button type="button" class="chip" id="dl-skip">Để sau</button></p>`:""}
     ${(miss=>miss.length?`<p class="cue banner">🧰 ${miss.length} bài cần dụng cụ bạn chưa có. <button type="button" class="chip" id="swap-all">Đổi hết sang bài thay thế</button></p>`:"")(list.filter(x=>!canDo(x.id)&&altFor(x.id)))}
     ${list.length?"":`<div class="rest"><b>Buổi này chưa có bài nào</b><p class="muted">Bấm "Thêm bài" để chọn, hoặc vào tab Bài mẫu để lấy lại giáo án gợi ý.</p></div>`}
     ${list.map(({k,id,sets,reps,note},ei)=>{const e=EX[id];const st=L.sets[k]||[];return `
-      <article class="ex${isKey(id)?" key":""}">
+      <article class="ex${isKey(id)?" key":""}${st.filter(Boolean).length>=sets?" ex-done":""}" data-card="${k}">
         <div class="ex-top">
           <div><div class="ex-name">${esc(e.n)}</div><div class="ex-en">${esc(e.en)}</div>${isKey(id)?`<span class="tag">${KEY[planSex].tag}</span>`:""}</div>
           <div class="dose">${esc(doseText(sets,reps))}${(r=>r?`<div class="muted rest-t">⏱ nghỉ ${restText(r)}${wk==="F"&&r===60?" (hết vòng)":""}</div>`:"")(restAt(list,ei,wk))}</div>
@@ -1246,7 +1377,7 @@ function renderSession(){
         <div class="sets">${Array.from({length:sets},(_,s)=>`<button class="set${st[s]?" on":""}" id="set-${mode}-${wk}-${ei}-${s}" data-e="${k}" data-s="${s}" data-n="${sets}" aria-pressed="${!!st[s]}" aria-label="${esc(e.n)} hiệp ${s+1}">${s+1}</button>`).join("")}</div>
         ${canDo(id)?"":(alt=>`<p class="cue banner">⚠️ Cần ${esc(needText(id))}, bạn chưa có.${alt?` <button type="button" class="chip" data-swap="${k}" data-to="${alt}">Đổi sang ${esc(EX[alt].n)}</button>`:" Bỏ qua bài này hoặc thay bằng bài khác."}</p>`)(altFor(id))}
         ${(pg=>pg?`<p class="prog">📈 Lần trước (${shortDate(pg.prev.date)}): ${pg.prev.reps.map(fmtNum).join(", ")} lần${pg.prev.kg!=null?" · "+fmtNum(pg.prev.kg)+" kg":""}<br>
-          Hôm nay: <b>${pg.target.map(fmtNum).join(", ")}${timed(reps)?" giây":" lần"}${pg.kg!=null?" · "+fmtNum(pg.kg)+" kg":""}</b>. ${esc(pg.msg)}</p>`
+          ${dl?`Tuần giảm tải: giữ <b>${pg.prev.kg!=null?fmtNum(pg.prev.kg)+" kg":"mức cũ"}</b>, làm nhẹ nhàng, không cố tăng.`:`Hôm nay: <b>${pg.target.map(fmtNum).join(", ")}${timed(reps)?" giây":" lần"}${pg.kg!=null?" · "+fmtNum(pg.kg)+" kg":""}</b>. ${esc(pg.msg)}`}</p>`
           :`<p class="prog muted">📈 Ghi số lần${timed(reps)?"":" và mức tạ"} hôm nay, buổi sau app sẽ gợi ý tăng dần.</p>`)(PG[k]=progress(id,sets,reps))}
         <div class="logrow">
           <label for="reps-${mode}-${wk}-${ei}">Số lần đã làm<input id="reps-${mode}-${wk}-${ei}" data-e="${k}" data-f="reps" inputmode="decimal" placeholder="${PG[k]?esc(PG[k].target.map(fmtNum).join(", ")):"vd: 12, 10, 9"}" value="${esc(L.reps[k]||"")}" autocomplete="off"></label>
@@ -1274,17 +1405,27 @@ function renderSession(){
   el.querySelectorAll(".set").forEach(b=>b.onclick=()=>{
     const Lx=ensure(wk),k=b.dataset.e,n=+b.dataset.n,s=+b.dataset.s;
     const arr=(Lx.sets[k]||[]).slice();while(arr.length<n)arr.push(false);
+    const wasAll=total>0&&countDone(Lx)>=total;keepAwake();
     arr[s]=!arr[s];Lx.sets[k]=arr;
     b.classList.toggle("on",arr[s]);b.setAttribute("aria-pressed",arr[s]);
     document.getElementById("prog").textContent=countDone(Lx)+"/"+total+" hiệp";
     commit(wk);
+    const card=el.querySelector(`[data-card="${k}"]`), full=arr.filter(Boolean).length>=n;
+    if(card){card.classList.toggle("ex-done",full);card.classList.remove("pop");if(full&&arr[s]){void card.offsetWidth;card.classList.add("pop")}}
+    if(!wasAll&&total>0&&countDone(Lx)>=total){
+      const st=streak(), nPR=Object.keys(records().prs[wid(wk)]||{}).length;
+      confetti(140);stopTimer();clock.textContent="0:00";tlab.textContent="Nghỉ giữa hiệp";
+      toast(`🎉 Xong buổi! ${total}/${total} hiệp`,[st.n?`🔥 ${st.n} tuần liền đủ buổi`:`Tuần này ${st.now}/${st.goal} buổi`,nPR?`🏆 ${nPR} kỷ lục mới`:""].filter(Boolean).join(" · "));
+      if(arr[s])return;
+    }
     const l=getList(mode,wk), i=l.findIndex(x=>x.k===k), sec=i<0?0:restAt(l,i,wk);
     if(arr[s]&&sec) startTimer(sec,wk==="F"?(sec===60?"Hết vòng, nghỉ 1 phút":"Chuyển sang bài tiếp"):"Nghỉ sau "+EX[l[i].id].n);
   });
-  el.querySelectorAll(".logrow input").forEach(inp=>inp.oninput=()=>{
+  el.querySelectorAll(".logrow input").forEach(inp=>{inp.oninput=()=>{
     const Lx=ensure(wk);Lx[inp.dataset.f][inp.dataset.e]=inp.value.trim();commit(wk);
-  });
+  };inp.onchange=()=>checkPR(wk,inp.dataset.e)});
   el.querySelectorAll("[data-swap]").forEach(b=>b.onclick=()=>swapEx(wk,b.dataset.swap,b.dataset.to));
+  [["dl-on",1],["dl-off",0],["dl-skip",0]].forEach(([id,on])=>{const b=document.getElementById(id);if(b)b.onclick=()=>setDeload(!!on)});
   const sa=document.getElementById("swap-all");
   if(sa) sa.onclick=()=>{
     const l=getList(mode,wk).map(x=>{if(canDo(x.id))return x;const a=altFor(x.id);if(!a)return x;const [sets,reps]=defDose(a);return {k:newKey(),id:a,sets,reps,note:""}});
@@ -1469,6 +1610,44 @@ pickAdd.onclick=()=>{
 };
 
 /* ---- journal tab ---- */
+/* weekly summary: the finished week by default (the running week from Sunday) */
+let sumWeek=null;
+function weekSummary(ws,fd,REC){
+  const cur=weekStart(todayKey);
+  if(!sumWeek)sumWeek=(keyToDate(todayKey).getDay()===0)?cur:shiftDay(cur,-7);
+  const a=sumWeek, b=shiftDay(a,6), inW=d=>d>=a&&d<=b;
+  const days=[...new Set(ws.filter(w=>w.done>0&&inW(w.date)).map(w=>w.date))].length, goal=Math.max(1,perWeek());
+  const f=fd.filter(d=>inW(d.date)), sl=Object.values(logs).filter(L=>L&&L.type==="sleep"&&inW(L.date));
+  const avg=(arr,k)=>arr.length?arr.reduce((s,x)=>s+x[k],0)/arr.length:null;
+  const kc=avg(f,"kc"), tg=f.filter(d=>d.target).length?f.filter(d=>d.target).reduce((s,d)=>s+d.target,0)/f.filter(d=>d.target).length:null;
+  const pAvg=avg(f,"p"), pLow=proteinTarget?f.filter(d=>d.p<proteinTarget).length:0, hrs=avg(sl,"hours");
+  const bs=bodies(), lastIn=k=>{const x=bs.filter(y=>y[k]&&y.date<=b);return x.length?x[x.length-1]:null}, lastBefore=k=>{const x=bs.filter(y=>y[k]&&y.date<a);return x.length?x[x.length-1]:null};
+  const ch=k=>{const e=lastIn(k),s0=lastBefore(k);return e&&s0&&e.date>=a?e[k]-s0[k]:null}, dKg=ch("kg"), dW=ch("waist");
+  const prN=Object.entries(REC.prs).filter(([id])=>logs[id]&&inW(logs[id].date)).reduce((s,[,v])=>s+Object.keys(v).length,0);
+  const sign=v=>(v>0?"+":v<0?"−":"±")+fmtNum(Math.abs(v));
+  const rows=[
+    ["🏋️ Buổi tập",`<b>${days}/${goal}</b>${days>=goal?" ✓":""}`],
+    ["🍚 Calo/ngày",kc!=null?`<b>${kcal(kc)}</b>${tg?` / ${kcal(tg)}`:""} kcal <span class="muted">(${f.length} ngày ghi)</span>`:"<span class=\"muted\">chưa ghi</span>"],
+    ["🥩 Đạm/ngày",pAvg!=null?`<b>${kcal(pAvg)} g</b>${proteinTarget?` / ${proteinTarget} g`:""}`:"<span class=\"muted\">—</span>"],
+    ["😴 Ngủ/đêm",hrs!=null?`<b>${fmtHours(hrs)}</b> <span class="muted">(${sl.length} đêm)</span>`:"<span class=\"muted\">chưa ghi</span>"],
+    ["⚖️ Cân / eo",dKg!=null||dW!=null?[dKg!=null?`<b>${sign(dKg)} kg</b>`:"",dW!=null?`<b>${sign(dW)} cm</b> eo`:""].filter(Boolean).join(" · "):"<span class=\"muted\">chưa cân trong tuần</span>"],
+    ["🏆 Kỷ lục mới",`<b>${prN}</b>`]];
+  const tips=[];
+  if(days<goal&&a!==cur)tips.push(`Thiếu ${goal-days} buổi so với lịch. Nếu bận, đặt lịch ít buổi hơn nhưng giữ đều sẽ tốt hơn.`);
+  if(proteinTarget&&f.length&&pLow>=Math.max(2,Math.ceil(f.length/2)))tips.push(`Đạm thiếu ${pLow}/${f.length} ngày đã ghi. Thêm 1 hộp sữa chua Hy Lạp (~10 g), 2 quả trứng (~12 g) hoặc 100 g ức gà (~31 g).`);
+  if(hrs!=null&&hrs<7)tips.push(`Ngủ trung bình ${fmtHours(hrs)}, dưới 7 tiếng. Thiếu ngủ khi đang giảm cân làm mất cơ nhiều hơn (Nedeltcheva 2010): thử đi ngủ sớm 30 phút.`);
+  if(f.length&&f.length<4)tips.push(`Mới ghi ăn ${f.length}/7 ngày. Ghi ít nhất 4–5 ngày thì số trung bình mới đáng tin.`);
+  if(kc!=null&&tg&&f.length>=4&&Math.abs(kc-tg)>250)tips.push(kc>tg?`Ăn trung bình nhiều hơn mục tiêu ${kcal(kc-tg)} kcal/ngày.`:`Ăn trung bình ít hơn mục tiêu ${kcal(tg-kc)} kcal/ngày, ăn thiếu nhiều dễ mệt và mất cơ.`);
+  const adj=typeof adjustReady!=="undefined"&&adjustAdvice();
+  if(adj&&adj.msg)tips.push(adj.msg.replace(/<[^>]+>/g,"")+` Xem gợi ý chỉnh calo ở tab Ăn uống.`);
+  return `<div class="ex wsum" id="wsum">
+    <div class="eat-date"><button type="button" class="icon" data-wsum="-1" aria-label="Tuần trước">‹</button>
+      <h3 style="flex:1;text-align:center;margin:0">📊 Tổng kết tuần ${shortDate(a)}–${shortDate(b)}${a===cur?" (đang diễn ra)":""}</h3>
+      <button type="button" class="icon" data-wsum="1" aria-label="Tuần sau"${a>=cur?" disabled":""}>›</button></div>
+    <ul>${rows.map(([t,v])=>`<li><span>${t}</span><span>${v}</span></li>`).join("")}</ul>
+    ${tips.length?tips.slice(0,2).map(t=>`<p class="wtip">💡 ${t}</p>`).join(""):(days||f.length?`<p class="wtip">👏 Tuần rất ổn, cứ giữ nhịp này.</p>`:"")}
+  </div>`;
+}
 const MODE_ICON={band:"🎒 Không tạ",home:"🏠 Ở nhà",park:"🌳 Công viên",gym:"🏋️ Gym"};
 function workouts(){return Object.entries(logs).filter(([id,L])=>L&&L.type==="workout"&&hasData(L)).map(([id,L])=>Object.assign({id},L)).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:(b.updatedAt||0)-(a.updatedAt||0))}
 function foodDays(){return Object.values(logs).filter(L=>L&&L.type==="food"&&Array.isArray(L.items)&&L.items.length).map(L=>{
@@ -1544,14 +1723,17 @@ function renderLog(){
   const kg=bs.filter(b=>b.kg).map(b=>({x:b.date,y:b.kg})), waist=bs.filter(b=>b.waist).map(b=>({x:b.date,y:b.waist}));
   const lastKg=kg.length?kg[kg.length-1].y:null, diffKg=kg.length>1?lastKg-kg[0].y:null;
   const lastW=waist.length?waist[waist.length-1].y:null, diffW=waist.length>1?lastW-waist[0].y:null;
+  const REC=records();
   box.innerHTML=`
     <div class="tiles">
+      ${(st=>`<div class="wide"><span>Chuỗi tuần đủ ${st.goal} buổi</span><b>${st.n?"🔥 "+st.n:"0"}<small> tuần liền</small></b><em class="${st.now>=st.goal?"":"up"}">Tuần này ${st.now}/${st.goal} buổi${st.now>=st.goal?", đã đạt":st.n?", còn "+(st.goal-st.now)+" buổi để giữ chuỗi":""}</em></div>`)(streak())}
       <div><span>Tuần này</span><b>${weekCount}<small>/${perWeek()} buổi</small></b></div>
       <div><span>Tổng số buổi</span><b>${dates.length}</b></div>
       <div><span>Cân nặng</span><b>${lastKg!=null?fmtNum(lastKg)+"<small> kg</small>":"—"}</b>${diffKg!=null?`<em class="${diffKg>0?"up":""}">${diffKg<=0?"↓ "+fmtNum(-diffKg):"↑ "+fmtNum(diffKg)} kg từ lần đầu</em>`:""}</div>
       <div><span>Vòng eo</span><b>${lastW!=null?fmtNum(lastW)+"<small> cm</small>":"—"}</b>${diffW!=null?`<em class="${diffW>0?"up":""}">${diffW<=0?"↓ "+fmtNum(-diffW):"↑ "+fmtNum(diffW)} cm từ lần đầu</em>`:""}</div>
     </div>
     <p class="cue">Tổng cộng ${sets} hiệp đã tập.</p>
+    ${weekSummary(ws,fd,REC)}
     <h2>${sb.title}</h2>
     <div class="chips" role="radiogroup" aria-label="Khoảng thời gian">${[["8w","8 tuần"],["6m","6 tháng"],["12m","1 năm"]].map(([v,t])=>`<button class="chip" id="range-${v}" data-range="${v}" role="radio" aria-pressed="${chartRange===v}" aria-checked="${chartRange===v}">${t}</button>`).join("")}</div>
     ${barChart(sb.buckets,sb.goal,sb.aria)}
@@ -1562,6 +1744,8 @@ function renderLog(){
     <h2>Kéo xà: số lần cao nhất</h2>${lineChart(bestSeries("pullup"),"lần")}
     <h2>Hít đất: số lần cao nhất</h2>${lineChart(bestSeries("pushup"),"lần")}
     <h2>Calo đã ăn mỗi ngày</h2>${lineChart(fd.slice(0,60).reverse().map(d=>({x:d.date,y:Math.round(d.kc)})),"kcal")}
+    ${(R=>{const ids=Object.keys(R.best).sort((a,b)=>R.best[a].date<R.best[b].date?1:-1);return ids.length?`<h2>🏆 Kỷ lục cá nhân</h2>
+    <details class="howto"><summary>${ids.length} bài · mới nhất: ${esc(R.best[ids[0]].n)} ${prText(ids[0],R.best[ids[0]])}</summary><div class="body"><ul class="plain pr-list">${ids.map(id=>`<li><span>${esc(R.best[id].n)}</span><span><b>${prText(id,R.best[id])}</b> <span class="muted">${shortDate(R.best[id].date)}</span></span></li>`).join("")}</ul></div></details>`:""})(REC)}
     <h2 id="hist-title">Nhật ký từng ngày${days.length?` <small class="muted">(${days.length} ngày)</small>`:""}</h2>
     <div class="eat-date" id="hist-date-row">
       <span class="cue">Xem ngày</span>
@@ -1575,7 +1759,7 @@ function renderLog(){
         <div class="hist-top"><b>${fmtDate(day)}</b><span class="muted">${wd.length?[...new Set(wd.map(L=>MODE_ICON[L.mode]||""))].join(" "):"Ngày nghỉ"}</span></div>
         ${wd.map(L=>`
         <div>${esc(L.title||"")} · <b>${L.done||0}/${L.total||0} hiệp</b>${L.feel?` · cảm nhận: ${esc(L.feel)}`:""}</div>
-        <ul class="plain hist-ex">${(L.ex||[]).filter(x=>x.done||x.reps||x.kg).map(x=>`<li><span>${esc(x.n)}</span><span class="muted">${x.done}/${x.total} hiệp${x.reps?" · "+esc(x.reps)+" lần":""}${x.kg?" · "+esc(x.kg)+" kg":""}</span></li>`).join("")}</ul>
+        <ul class="plain hist-ex">${(L.ex||[]).filter(x=>x.done||x.reps||x.kg).map(x=>`<li><span>${esc(x.n)}${(REC.prs[L.id]||{})[x.id]?" 🏆":""}</span><span class="muted">${x.done}/${x.total} hiệp${x.reps?" · "+esc(x.reps)+" lần":""}${x.kg?" · "+esc(x.kg)+" kg":""}</span></li>`).join("")}</ul>
         ${L.note?`<p class="cue">📝 ${esc(L.note)}</p>`:""}
         <button class="reset" id="del-${L.id}" data-del="${L.id}">Xoá buổi tập này</button>`).join("")}
         ${sleepLine(slBy[day])}
@@ -1594,6 +1778,7 @@ function renderLog(){
     })()
     :`<div class="rest"><b>Chưa có ngày nào</b><p class="muted">Tập ở tab Tập, ghi bữa ăn ở tab Ăn uống, hoặc lưu số đo ở trên. Mỗi ngày sẽ tự hiện ở đây.</p></div>`}`;
   box.querySelectorAll("[data-range]").forEach(b=>b.onclick=()=>{chartRange=b.dataset.range;store.set("range",chartRange);renderLog()});
+  box.querySelectorAll("[data-wsum]").forEach(b=>b.onclick=()=>{sumWeek=shiftDay(sumWeek,+b.dataset.wsum*7);renderLog();document.getElementById("wsum").scrollIntoView({block:"nearest"})});
   box.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>{showTab("food");setEatDate(b.dataset.day);document.getElementById("eat-title").scrollIntoView()});
   box.querySelectorAll("[data-wday]").forEach(b=>b.onclick=()=>{
     const k=b.dataset.wday, L=ws.find(x=>x.date===k);
@@ -1614,6 +1799,7 @@ function renderLog(){
   document.getElementById("hist-prev").onclick=()=>goDay(shiftDay(histDay||todayKey,histDay?-1:0));
   document.getElementById("hist-next").onclick=()=>goDay(shiftDay(histDay||todayKey,histDay?1:0));
 
+  if(typeof adjustReady!=="undefined")renderAdjust();
   const more=document.getElementById("hist-more");
   if(more) more.onclick=()=>{histLimit+=20;renderLog()};
   box.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
@@ -1738,22 +1924,56 @@ function fmt(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
 function tick(){
   const left=Math.max(0,Math.ceil((tEnd-Date.now())/1000));
   clock.textContent=fmt(left);
-  if(left===0){stopTimer();timer.classList.add("ring");tlab.textContent="Hết giờ, vào hiệp tiếp!";try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+  if(left===0){stopTimer();timer.classList.add("ring");tlab.textContent="Hết giờ, vào hiệp tiếp!";try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}beep()}
 }
+/* light / dark / follow the phone */
+const THEMES={auto:["🌗","Giao diện: theo điện thoại"],dark:["🌙","Giao diện: tối"],light:["☀️","Giao diện: sáng"]};
+let theme=(t=>THEMES[t]?t:"auto")(store.get("theme","auto"));
+function applyTheme(){
+  if(theme==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=theme;
+  const b=document.getElementById("theme-btn");b.textContent=THEMES[theme][0];b.setAttribute("aria-label",THEMES[theme][1]+". Bấm để đổi");b.title=THEMES[theme][1];
+}
+document.getElementById("theme-btn").onclick=()=>{theme={auto:"dark",dark:"light",light:"auto"}[theme];store.set("theme",theme);applyTheme();toast(THEMES[theme][0]+" "+THEMES[theme][1])};
+applyTheme();
+
+/* keep the screen on while a workout is going: from the first ticked set until 20 minutes without activity */
+let wake=null, wakeUntil=0, wakeT=0;
+async function keepAwake(){
+  wakeUntil=Date.now()+20*60000;clearTimeout(wakeT);wakeT=setTimeout(releaseWake,20*60000);
+  if(wake||!("wakeLock" in navigator)||document.visibilityState!=="visible")return;
+  try{wake=await navigator.wakeLock.request("screen");wake.addEventListener("release",()=>{wake=null})}catch(e){wake=null}
+}
+function releaseWake(){wakeUntil=0;if(wake){wake.release().catch(()=>{});wake=null}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()<wakeUntil)keepAwake()});
+
+/* short beeps when rest ends; the audio context must be created from a tap, which startTimer always is */
+let actx=null, soundOn=store.get("sound",true)!==false;
+function unlockAudio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume()}catch(e){}}
+function beep(){
+  if(!soundOn||!actx)return;
+  try{const t=actx.currentTime;[0,.28,.56].forEach((d,i)=>{const o=actx.createOscillator(),g=actx.createGain();
+    o.type="sine";o.frequency.value=i===2?1320:880;o.connect(g);g.connect(actx.destination);
+    g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.4,t+d+.015);g.gain.exponentialRampToValueAtTime(.0001,t+d+(i===2?.4:.18));
+    o.start(t+d);o.stop(t+d+.45)})}catch(e){}
+}
+function renderSound(){const b=document.getElementById("tsound");b.textContent=soundOn?"🔔":"🔕";b.setAttribute("aria-label",soundOn?"Tắt tiếng bíp":"Bật tiếng bíp");b.setAttribute("aria-pressed",soundOn)}
 function startTimer(sec,lab){
+  unlockAudio();keepAwake();
   timer.classList.remove("ring");tlab.textContent=lab||"Đang nghỉ";
   tEnd=Date.now()+sec*1000;clearInterval(tInt);tInt=setInterval(tick,250);tick();tstop.hidden=tplus.hidden=false;timer.classList.add("run");
 }
 function stopTimer(){clearInterval(tInt);tInt=null;tstop.hidden=tplus.hidden=true;timer.classList.remove("run")}
 const tplus=document.getElementById("tplus");
 tplus.onclick=()=>{tEnd+=30000;tick()};
+document.getElementById("tsound").onclick=()=>{soundOn=!soundOn;store.set("sound",soundOn);renderSound();if(soundOn){unlockAudio();beep()}};
+renderSound();
 document.querySelectorAll(".timer [data-sec]").forEach(b=>b.onclick=()=>startTimer(+b.dataset.sec));
 tstop.onclick=()=>{stopTimer();clock.textContent="0:00";tlab.textContent="Nghỉ giữa hiệp";timer.classList.remove("ring")};
 
 document.getElementById("log-prev").onclick=()=>setLogDate(shiftDay(logDate,-1));
 document.getElementById("log-next").onclick=()=>setLogDate(shiftDay(logDate,1));
 document.getElementById("log-day").onchange=e=>{if(/^\d{4}-\d\d-\d\d$/.test(e.target.value))setLogDate(e.target.value)};
-renderEquip();renderAll();renderGuide();initBodyForm();initSleepForm();renderLog();setLogDate(todayKey);
+renderEquip();renderStreak();renderAll();renderGuide();initBodyForm();initSleepForm();renderLog();setLogDate(todayKey);
 const isField=t=>t&&t.matches&&t.matches("input:not([type=file]):not([type=checkbox]):not([type=radio]),textarea,select");
 document.addEventListener("focusin",e=>{if(isField(e.target))document.body.classList.add("typing")});
 /* wait a moment: moving from one field to the next fires focusout first, which used to flash the bar above the keyboard */
@@ -2128,7 +2348,55 @@ function calcTdee(){
     :g==="keep"?"<b>Giữ cân</b>":`${G.t} <b>≈ ${fmtNum(perWk)} kg/tuần</b>`;
   renderBfEst();
   renderEatToday();
+  renderAdjust();
+  document.getElementById("tdee-sum").innerHTML=eatTarget
+    ?`${g==="keep"?"Giữ cân":G.t}: <b>${kcal(eatTarget)} kcal</b>/ngày${proteinTarget?` · đạm <b>${proteinTarget}–${proteinHi} g</b>`:""}`
+    :"Chưa nhập, bấm để tính lượng calo nên ăn";
+  const box=document.getElementById("tdee-box");
+  if(!box.dataset.init){box.dataset.init="1";box.open=!eatTarget}
 }
+/* compare the real weight trend of the last 4 weeks with the goal and offer a 150 kcal correction.
+   Targets: cut 0,5–1% of body weight per week (Helms 2014), bulk 0,25–0,5% (Iraki 2019) */
+function trend(key,days){
+  const pts=bodies().filter(b=>b[key]&&b.date>shiftDay(todayKey,-days));
+  if(pts.length<3)return null;
+  const t=pts.map(b=>(keyToDate(b.date)-keyToDate(pts[0].date))/864e5), y=pts.map(b=>b[key]);
+  const span=t[t.length-1];if(span<14)return null;
+  const mt=t.reduce((a,x)=>a+x,0)/t.length, my=y.reduce((a,x)=>a+x,0)/y.length;
+  const slope=t.reduce((a,x,i)=>a+(x-mt)*(y[i]-my),0)/t.reduce((a,x)=>a+(x-mt)**2,0);
+  return {perWk:slope*7,last:y[y.length-1],n:pts.length,span};
+}
+function adjustAdvice(){
+  const g=goal();if(g==="keep"||!eatTarget)return null;
+  const W=trend("kg",28);if(!W)return {wait:true};
+  const pct=W.perWk/W.last*100, E=trend("waist",28), gap=goalGap();
+  if(prof.adjAt&&prof.adjAt>shiftDay(todayKey,-14))return {info:`Đã chỉnh mục tiêu ngày ${fmtDate(prof.adjAt)}. Đợi thêm khoảng 2 tuần để thấy kết quả rồi app sẽ xem lại.`,W,pct};
+  const rate=Math.abs(W.perWk)<0.05?`Cân <b>gần như không đổi</b> trong ${Math.round(W.span/7)} tuần qua`
+    :`Cân ${W.perWk<0?"giảm":"tăng"} khoảng <b>${fmtNum(Math.abs(W.perWk))} kg/tuần</b> (${fmtNum(Math.abs(pct))}% cân nặng) trong ${Math.round(W.span/7)} tuần qua`;
+  if(g==="cut"){
+    if(pct>-0.2){
+      if(E&&E.perWk<=-0.25)return {info:`${rate}, nhưng vòng eo vẫn nhỏ đi ${fmtNum(-E.perWk)} cm/tuần. Đang giảm mỡ và lên cơ cùng lúc, cứ giữ nguyên.`,W,pct};
+      return gap>=600?{info:`${rate}, chưa đạt mục tiêu dù đã bớt ${kcal(gap)} kcal. Không nên bớt thêm: kiểm tra lại số gam khi ghi (dầu mỡ, nước sốt hay bị sót) và đi bộ thêm 3–4 nghìn bước mỗi ngày.`,W,pct}
+        :{msg:`${rate}, chậm hơn mức nên có (0,5–1%/tuần)${E?" và vòng eo cũng không nhỏ đi":""}.`,act:`Bớt thêm 150 kcal`,to:gap+150,W,pct};
+    }
+    if(pct<-1)return {msg:`${rate}, nhanh hơn 1%/tuần nên dễ mất cơ và mệt.`,act:"Ăn thêm 150 kcal",to:Math.max(100,gap-150),W,pct};
+    return {info:`${rate}, đúng nhịp giảm mỡ (0,5–1%/tuần). Giữ nguyên.`,ok:true,W,pct};
+  }
+  if(pct<0.1)return {msg:`${rate}, chưa tăng như mục tiêu (0,25–0,5%/tuần).`,act:"Ăn thêm 150 kcal",to:gap+150,W,pct};
+  if(pct>0.6)return {msg:`${rate}, nhanh hơn 0,5%/tuần nên phần tăng thêm chủ yếu là mỡ.`,act:"Bớt 150 kcal",to:Math.max(100,gap-150),W,pct};
+  return {info:`${rate}, đúng nhịp tăng cơ (0,25–0,5%/tuần). Giữ nguyên.`,ok:true,W,pct};
+}
+function renderAdjust(){
+  const box=document.getElementById("adjust");if(!box)return;
+  const a=adjustAdvice();
+  if(!a){box.innerHTML="";return}
+  if(a.wait){box.innerHTML=`<p class="cue">📉 Cân ít nhất 3 lần trong 2–4 tuần (ở tab Nhật ký), app sẽ so với mục tiêu và gợi ý chỉnh calo theo cân nặng thật.</p>`;return}
+  box.innerHTML=a.msg?`<p class="cue banner">📉 ${a.msg} <button type="button" class="chip" id="adj-go">${a.act} → ${G_word(a.to)}</button></p>`:`<p class="cue">${a.ok?"✅":"📉"} ${a.info}</p>`;
+  const b=document.getElementById("adj-go");
+  if(b)b.onclick=()=>{const g=goal();(prof.gaps=prof.gaps||{})[g]=a.to;prof.adjAt=todayKey;store.set("tdee",prof);renderGoal();calcTdee();toast("Đã chỉnh mục tiêu: "+kcal(eatTarget)+" kcal/ngày","Cân tiếp 2–3 tuần rồi xem lại.")};
+}
+const G_word=gap=>(GOAL[goal()].sign<0?"bớt ":"thêm ")+kcal(gap)+" kcal";
+var adjustReady=true;
 
 /* target body fat: weight at that fat % if lean mass stays the same, and how long the chosen deficit takes */
 function renderBfGoal(w,bf,gap,g,h){
@@ -2410,18 +2678,42 @@ function renderEatSum(){
   const items=eatItems();
   const kc=items.reduce((s,x)=>s+itemKc(x),0), p=items.reduce((s,x)=>s+itemP(x),0);
   const pct=eatTarget?Math.min(100,kc/eatTarget*100):0, over=eatTarget&&kc>eatTarget;
+  const pp=proteinTarget?Math.min(100,p/proteinTarget*100):0, kHit=eatTarget&&kc>=eatTarget*0.9&&!over, pHit=proteinTarget&&p>=proteinTarget;
+  const was=meterWas[eatDate]||{k:0,p:0,kh:false,ph:false};
   document.getElementById("eat-sum").innerHTML=`<div class="eat-big"><span><b>${kcal(kc)}</b> <span class="muted">${eatTarget?"/ "+kcal(eatTarget)+" ":""}kcal</span></span>
       <span class="muted">${kcal(p)}${proteinTarget?` / ${proteinTarget}–${proteinHi}`:""} g đạm</span></div>
-    ${eatTarget?`<div class="meter${over?" over":""}"><i style="width:${pct}%"></i></div>
+    ${eatTarget?`<div class="meter-row${kHit&&!was.kh?" got":""}"><span>Calo</span><div class="meter${over?" over":kHit?" hit":""}"><i data-w="${pct}" style="width:${was.k}%"></i></div><span>${over?"vượt":kHit?'<span class="ok">✓ đủ</span>':Math.round(pct)+"%"}</span></div>
+      ${proteinTarget?`<div class="meter-row${pHit&&!was.ph?" got":""}"><span>Đạm</span><div class="meter${pHit?" hit":""}"><i data-w="${pp}" style="width:${was.p}%"></i></div><span>${pHit?'<span class="ok">✓ đủ</span>':Math.round(pp)+"%"}</span></div>`:""}
       <p class="cue">${over?`Đã vượt ${kcal(kc-eatTarget)} kcal so với mục tiêu.`:`Còn khoảng <b>${kcal(eatTarget-kc)} kcal</b> so với mục tiêu.`}${proteinTarget
         ?(p<proteinTarget?` Đạm còn thiếu <b>${kcal(proteinTarget-p)} g</b> để đạt mức tối thiểu, nên nhắm khoảng ${Math.round((proteinTarget+proteinHi)/2/5)*5} g.`
           :p<=proteinHi?" Đạm đã đủ ✓":" Đạm đã vượt khoảng khuyến nghị, không hại nhưng có thể đổi bớt sang tinh bột cho đỡ mệt khi tập.")
         :""}</p>`
     :`<p class="cue">Nhập thông tin ở mục Tính TDEE để biết hôm nay nên ăn bao nhiêu.</p>`}`;
+  meterWas[eatDate]={k:pct,p:pp,kh:!!kHit,ph:!!pHit};
+  // grow from the previous width to the new one
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll("#eat-sum .meter i[data-w]").forEach(i=>i.style.width=i.dataset.w+"%")));
 }
+const meterWas={};
 const itemHint=x=>`${esc(x.u)} = ${x.sg}${x.unit}${x.p?" · "+fmtNum(itemP(x))+"g đạm":""}`;
+/* copy the meals of the closest earlier logged day (within a week) */
+function prevMealDay(){for(let i=1;i<=7;i++){const d=shiftDay(eatDate,-i),L=logs["f_"+d];if(L&&Array.isArray(L.items)&&L.items.length)return d}return null}
+function renderEatCopy(){
+  const box=document.getElementById("eat-copy"), d=prevMealDay();
+  if(!d){box.innerHTML="";return}
+  const its=logs["f_"+d].items, kc=its.reduce((a,x)=>a+(x.gr!=null?x.kc*x.gr/x.sg:x.kc*(x.q||1)),0);
+  box.innerHTML=`<button type="button" class="chip" id="eat-copy-btn">↻ Chép bữa ${d===shiftDay(eatDate,-1)?"hôm trước":fmtDate(d)} (${its.length} món · ${kcal(kc)} kcal)</button>`;
+  document.getElementById("eat-copy-btn").onclick=()=>{
+    const id=eatId();if(!logs[id])logs[id]={type:"food",date:eatDate,items:[]};
+    const before=JSON.parse(JSON.stringify(eatItems())), items=eatItems();
+    logs["f_"+d].items.forEach(x0=>{const x=JSON.parse(JSON.stringify(x0));if(x.gr==null){x.sg=x.sg||100;x.gr=Math.round((x.q||1)*x.sg);delete x.q}
+      const same=items.find(y=>y.id===x.id);if(same)same.gr+=x.gr;else items.push(x)});
+    saveEat();renderEatToday();
+    toast(`↻ Đã chép ${its.length} món từ ${fmtDate(d)}`,`<button type="button" class="chip" id="eat-undo">Hoàn tác</button>`);
+    document.getElementById("eat-undo").onclick=e=>{e.stopPropagation();const L=logs[id];if(L){L.items=before;saveEat();renderEatToday()}document.getElementById("toast").hidden=true};
+  };
+}
 function renderEatToday(){
-  renderEatSum();
+  renderEatSum();renderEatCopy();
   const items=eatItems(), el=document.getElementById("eat-today");
   el.innerHTML=items.length?items.map((x,i)=>`<div class="food ate" id="eat-row-${i}">
       <span>${esc(x.n)}</span><span class="kc" id="eat-kc-${i}">${kcal(itemKc(x))} kcal</span>
